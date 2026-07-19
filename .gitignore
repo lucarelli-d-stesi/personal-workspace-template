@@ -1,0 +1,9 @@
+# Private instances live here (each is its own git repo) — never tracked
+personal/
+
+# Local LLM settings
+.claude/settings.local.json
+
+# Editor cruft
+*.swp
+.DS_Store
