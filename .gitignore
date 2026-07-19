@@ -1,6 +1,9 @@
 # Private instances live here (each is its own git repo) — never tracked
 personal/
 
+# Local pointer to the user's instance repo (per machine, per user)
+.pos-config
+
 # Local LLM settings
 .claude/settings.local.json
 

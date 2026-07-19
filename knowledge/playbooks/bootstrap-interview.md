@@ -5,6 +5,16 @@ session. Style: **open dialogue**, one theme at a time — not a form to fill.
 Everything produced here is `source: declared`; observed entries come later
 from use.
 
+## 0. Locate and inventory the instance repo
+
+Resolve the instance from `.pos-config` (`instance_dir=...`) at the
+framework root; if missing, ask the user to indicate their repo and write
+the file. If the repo already contains material (notes, lists, documents),
+inventory it briefly and use it as *input* for the interview: existing
+content often reveals the real areas better than questions do. Graft the
+POS folders alongside what exists — never move or overwrite the user's
+material without asking.
+
 ## 1. Life areas (→ `areas/<area>/context.md`)
 
 Explore which 3–5 areas matter *now* (family, home, finance, health, hobby,

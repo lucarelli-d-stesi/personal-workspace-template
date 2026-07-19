@@ -12,10 +12,14 @@
 
 - Everything is Markdown with optional YAML frontmatter. Kebab-case
   filenames, ISO dates (`YYYY-MM-DD`) everywhere.
-- Instance layout (one folder per life area):
+- The instance repo is the user's own: any name, possibly pre-existing.
+  Its local mount point is registered in `.pos-config` at the framework
+  root (`instance_dir=...`), never derived from a naming convention.
+- Instance layout (one folder per life area) — the canonical structure the
+  playbooks rely on; grafted alongside existing content, never overwriting it:
 
 ```
-personal/<name>/            # private instance repo
+<instance_dir>/             # private instance repo, user-chosen name
 ├── CLAUDE.md               # generated from setup/templates/CLAUDE.template.md
 ├── profile/                # emotional backbone: values, style, boundaries, observations
 ├── areas/<area>/

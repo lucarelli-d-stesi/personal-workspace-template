@@ -20,7 +20,7 @@ the human decides, the system prepares, remembers and proposes.
 | Repo | Visibility | Contains |
 |---|---|---|
 | **Framework** (this repo) | public | kernel, conventions, templates, playbooks, update channel. Zero personal data — ever. |
-| **Instance** (`<your-name>-pos`) | private, one per person | your areas, backlog, worklog, knowledge, profile. Cloned inside the framework at `personal/<your-name>/` (gitignored). |
+| **Instance** (any repo you choose) | private, one per person | your areas, backlog, worklog, knowledge, profile. Name and structure are yours — setup asks you to indicate it and mounts it inside the framework under `personal/` (gitignored). |
 
 Personal data cannot physically end up in the public repo: the two working
 trees are different repositories. Framework improvements reach instances

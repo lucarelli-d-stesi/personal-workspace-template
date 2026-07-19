@@ -17,20 +17,36 @@ git clone https://github.com/danielelucarelli1980/personal-workspace.git ~/perso
 cd ~/personal-workspace
 ```
 
-## 2. Create your private instance repo
+## 2. Choose your private instance repo
 
-Create a **private** repo named `<your-name>-pos` and clone it inside the
-framework (the `personal/` folder is gitignored — the two repos never mix):
+The instance repo is yours: any name, any hosting, new or pre-existing (an
+existing notes repo works too). The framework never assumes its name or
+structure — setup **asks** you to indicate it. Only two requirements: it is
+a git repo and it is **private**.
 
 ```bash
-gh repo create <your-name>-pos --private
-git clone git@github.com:<login>/<your-name>-pos.git personal/<your-name>
+# a new repo, named however you like:
+gh repo create <any-name> --private
+# clone it inside the framework (personal/ is gitignored — the two repos never mix):
+git clone git@github.com:<login>/<any-name>.git personal/<any-name>
+```
+
+Record your choice in `.pos-config` at the framework root (local file, not
+tracked — the future `bootstrap.sh` will ask and write it for you):
+
+```
+instance_dir=personal/<any-name>
 ```
 
 ## 3. Seed the instance structure
 
+The layout in `kernel/conventions.md` is the canonical structure the
+playbooks rely on — but it is a proposal to graft, not a mold: if your repo
+already has content, keep it and add the POS folders alongside (the
+bootstrap interview will help map what exists onto areas).
+
 ```bash
-cd personal/<your-name>
+cd personal/<any-name>
 mkdir -p profile areas backlog/items knowledge inbox journal
 cp ../../setup/templates/profile/*.md profile/
 # rename: values-TEMPLATE.md -> values.md, etc.
@@ -38,14 +54,14 @@ cp ../../setup/templates/profile/*.md profile/
 
 ## 4. Generate your assistant configuration
 
-Copy `setup/templates/CLAUDE.template.md` to `personal/<your-name>/CLAUDE.md`
+Copy `setup/templates/CLAUDE.template.md` to `<instance_dir>/CLAUDE.md`
 and replace the `{{NAME}}` and `{{LANGUAGE}}` placeholders. Then create a
 workspace-level `CLAUDE.md` in the framework root **of your local clone only**
 (it is not tracked) or configure your assistant to load, in order:
 
 1. `kernel/principles.md` and `kernel/conventions.md` (always)
 2. `knowledge/INDEX.md` (always — routing map, content on demand)
-3. `personal/<your-name>/CLAUDE.md` (your identity and language)
+3. `<instance_dir>/CLAUDE.md` (your identity and language)
 
 ## 5. Run the bootstrap interview
 
