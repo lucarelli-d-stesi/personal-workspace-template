@@ -1,0 +1,5 @@
+.git/
+reference/
+knowledge/stesi-odoo-reference
+node_modules/
+.zvec-grep/

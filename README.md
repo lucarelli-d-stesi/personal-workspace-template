@@ -39,9 +39,15 @@ through reviewed migration scripts (`setup/updates/`), never through merges.
 - **Lazy knowledge** — only `kernel/` and the knowledge INDEX are always
   loaded; everything else is read on demand and kept within size budgets
   (see `knowledge/playbooks/knowledge-gc.md`).
-- **Harvesting** — the context builds itself from use: a bootstrap interview
+- **Organic harvesting** — the context builds itself from real use: day-to-day work
   seeds it, an end-of-session routine feeds it, a weekly review consolidates
-  and compacts it.
+  and compacts it. No upfront interview questionnaire needed.
+- **Associative memory** — local semantic vector search (`zg`) surfaces relevant
+  past experiences across areas and notes by conceptual proximity, accommodating
+  dynamic pivots during sessions.
+- **Skill partitioning** — universal methodology skills (project management,
+  text drafting) live in the framework; domain-specific skills (e.g. software development,
+  languages, specialized analysis) stay in each person's private repo.
 - **Emotional backbone** (`profile/` in your instance) — your values, style
   and boundaries, with explicit provenance (declared vs observed) and
   confidence. It modulates *how* the assistant works — tone, priorities,
@@ -51,9 +57,8 @@ through reviewed migration scripts (`setup/updates/`), never through merges.
 
 ## Quick start
 
-Follow [ONBOARDING.md](ONBOARDING.md). In short: clone this repo, create your
-private instance repo, seed it from the templates, then run the bootstrap
-interview (`knowledge/playbooks/bootstrap-interview.md`) with your assistant.
+Follow [ONBOARDING.md](ONBOARDING.md). In short: clone this repo, run `bash setup/bootstrap.sh`,
+and start working directly on your actual tasks with your assistant.
 
 ## Status
 

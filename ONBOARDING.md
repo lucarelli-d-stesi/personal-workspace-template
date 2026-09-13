@@ -1,83 +1,54 @@
-# Onboarding — set up your POS
+# Onboarding — Set Up Your Personal Operating System (POS)
 
-Idempotent checklist: every step can be re-run safely. Automation scripts
-(`bootstrap.sh`, `install-llm.sh`) are on the roadmap; until then the steps
-are manual and explicit.
+The **personal-workspace** is a universal, agnostic operational framework. It contains general operating rules, universal methodology skills, and indexing infrastructure.
 
-## Prerequisites
+**All personal data, individual values, boundaries, private sources, and specialized domain skills reside in your private instance repository.**
 
-- A GitHub account (or any git hosting) where you can create a **private** repo.
-- An LLM coding assistant with filesystem access (e.g. Claude Code).
-- Disk encryption at rest is strongly recommended before storing personal data.
+---
 
-## 1. Clone the framework
+## Quick Start (Automated Bootstrap)
+
+### 1. Clone the framework
 
 ```bash
 git clone https://github.com/danielelucarelli1980/personal-workspace.git ~/personal-workspace
 cd ~/personal-workspace
 ```
 
-## 2. Choose your private instance repo
-
-The instance repo is yours: any name, any hosting, new or pre-existing (an
-existing notes repo works too). The framework never assumes its name or
-structure — setup **asks** you to indicate it. Only two requirements: it is
-a git repo and it is **private**.
+### 2. Run the bootstrap script
 
 ```bash
-# a new repo, named however you like:
-gh repo create <any-name> --private
-# clone it inside the framework (personal/ is gitignored — the two repos never mix):
-git clone git@github.com:<login>/<any-name>.git personal/<any-name>
+bash setup/bootstrap.sh
 ```
 
-Record your choice in `.pos-config` at the framework root (local file, not
-tracked — the future `bootstrap.sh` will ask and write it for you):
+The script is idempotent and handles:
+- **Environment & safety checks**: non-root user, OS detection, disk encryption diagnostic (LUKS/FileVault/BitLocker).
+- **Deploying/connecting your personal repo**: asks for your private instance repo (or creates it), clones it into `personal/<name>`, and records `.pos-config`.
+- **Seeding the canonical layout**: `profile/`, `areas/`, `backlog/items/`, `knowledge/`, `reference/`, `inbox/`, `journal/`, `skills/`.
+- **Generating instance configuration**: creates `<instance_dir>/CLAUDE.md` and symlinks `AGENTS.md` / `GEMINI.md`.
+- **Skill partitioning**: links your personal domain skills (`<instance_dir>/skills/*`) into the framework's `.agents/skills/`.
+- **Local semantic index (`zg`)**: configures exclusions and builds the local vector index for associative memory.
 
-```
-instance_dir=personal/<any-name>
-```
+---
 
-## 3. Seed the instance structure
+## Organic Discovery (No Upfront Interview)
 
-The layout in `kernel/conventions.md` is the canonical structure the
-playbooks rely on — but it is a proposal to graft, not a mold: if your repo
-already has content, keep it and add the POS folders alongside (the
-bootstrap interview will help map what exists onto areas).
+**There is no initial interview questionnaire.**
 
-```bash
-cd personal/<any-name>
-mkdir -p profile areas backlog/items knowledge inbox journal
-cp ../../setup/templates/profile/*.md profile/
-# rename: values-TEMPLATE.md -> values.md, etc.
-```
+Discovery occurs organically over time based on actual tasks and mapped data:
+- Start directly by asking your AI assistant to assist with any real task (e.g. *"let's plan a home repair"*, *"help me draft an essay"*, *"compare car insurance quotes"*).
+- The assistant will progressively map areas, backlog items, profile observations, and experiential knowledge inside your private instance repo.
 
-## 4. Generate your assistant configuration
+---
 
-Copy `setup/templates/CLAUDE.template.md` to `<instance_dir>/CLAUDE.md`
-and replace the `{{NAME}}` and `{{LANGUAGE}}` placeholders. Then create a
-workspace-level `CLAUDE.md` in the framework root **of your local clone only**
-(it is not tracked) or configure your assistant to load, in order:
+## Working Loop
 
-1. `kernel/principles.md` and `kernel/conventions.md` (always)
-2. `knowledge/INDEX.md` (always — routing map, content on demand)
-3. `<instance_dir>/CLAUDE.md` (your identity and language)
-
-## 5. Run the bootstrap interview
-
-Open your assistant in the workspace and ask it to run
-`knowledge/playbooks/bootstrap-interview.md`. Outcome: your first 3–5 areas
-with their `context.md`, an initial declared-only profile, and the choice of
-task backend (none → local backlog, which is the default).
-
-## 6. Adopt the working loop
-
-- During work: specs and worklogs per area, backlog items with stable ids.
-- End of session: `knowledge/playbooks/harvesting.md`.
-- Weekly: `knowledge/playbooks/weekly-review.md`.
-
-## 7. Stay up to date
-
-Pull the framework regularly. Structure migrations arrive as reviewed
-scripts in `setup/updates/` (see its README): read, approve, apply — never
-run updates blindly.
+1. **Kickoff & Dynamic Pivots**:
+   - The agent uses `zg query "<topic>"` to retrieve past experiences across all notes and areas via semantic proximity.
+2. **Execution**:
+   - Work breakdown, specs, and append-only worklogs in `<instance_dir>/areas/<area>/`.
+   - Local-first backlog items in `<instance_dir>/backlog/items/<id>.md` with stable IDs and multi-dimensional tags.
+3. **End of Session (Harvesting)**:
+   - Follow `knowledge/playbooks/harvesting.md` to update worklogs, STATUS, and distill general lessons into `knowledge/`.
+4. **Weekly Review**:
+   - Follow `knowledge/playbooks/weekly-review.md` to consolidate the inbox and compact oversized knowledge files.

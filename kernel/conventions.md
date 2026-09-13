@@ -22,16 +22,19 @@
 <instance_dir>/             # private instance repo, user-chosen name
 ├── CLAUDE.md               # generated from setup/templates/CLAUDE.template.md
 ├── profile/                # emotional backbone: values, style, boundaries, observations
+├── skills/                 # individual domain skills (e.g. specialized dev, study, analysis)
+├── reference/sources/      # catalog of external repos and sources (content & method)
+├── knowledge/              # personal distilled reference, grows from use
 ├── areas/<area>/
 │   ├── STATUS.md           # dashboard: one row per activity + machine-owned sync block
 │   ├── context.md          # identity of the area (frontmatter + free sections)
 │   ├── specs/<item>.md     # requirements, Summary-first
 │   └── worklog/<item>.md   # append-only diary
 ├── backlog/items/<id>.md   # local-first activities (see backlog-item template)
-├── knowledge/              # personal reference, grows from use
 ├── inbox/                  # staged lessons learned, consolidated at weekly review
 └── journal/                # optional cross-area diary
 ```
+
 
 ## Stable ids
 

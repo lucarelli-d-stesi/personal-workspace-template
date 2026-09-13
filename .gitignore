@@ -10,3 +10,15 @@ personal/
 # Editor cruft
 *.swp
 .DS_Store
+
+# Local machine-specific reference links (e.g. to STeSI on dev machine)
+reference/
+knowledge/stesi-odoo-reference
+
+# Local semantic vector index
+.zvec-grep/
+
+# Instance-specific skills linked locally from personal repo
+.agents/skills/odoo-*
+
+
