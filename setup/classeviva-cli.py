@@ -8,7 +8,8 @@ Provides command-line and AI-agent access to Spaggiari ClasseViva electronic sch
 - Today's lessons / topics covered (lezioni)
 - Grades (voti)
 
-Supports both Parent accounts (G... with multiple children) and Student accounts (S...).
+Supports Parent accounts (email or G... with automatic discovery of multiple children)
+and Student accounts (S...).
 Reads credentials securely from ~/.config/pos/classeviva.env (mode 600, outside Git).
 """
 
@@ -66,15 +67,14 @@ class ClasseVivaClient:
     def __init__(self, username: str, password: str):
         self.username = username
         self.password = password
-        self.token: Optional[str] = None
-        self.user_data: Dict[str, Any] = {}
-        self.cards: List[Dict[str, Any]] = []
+        self.sessions: Dict[str, Dict[str, Any]] = {}
+        self.account_name: str = ""
 
-    def _request(self, method: str, endpoint: str, data: Optional[Dict[str, Any]] = None) -> Any:
+    def _request(self, method: str, endpoint: str, data: Optional[Dict[str, Any]] = None, token: Optional[str] = None) -> Any:
         url = f"{BASE_URL}{endpoint}" if endpoint.startswith("/") else endpoint
         headers = dict(DEFAULT_HEADERS)
-        if self.token:
-            headers["Z-Auth-Token"] = self.token
+        if token:
+            headers["Z-Auth-Token"] = token
 
         body_bytes = None
         if data is not None:
@@ -105,84 +105,132 @@ class ClasseVivaClient:
             "uid": self.username
         }
         res = self._request("POST", "/v1/auth/login", data=payload)
-        self.user_data = res
-        self.token = res.get("token")
-        if not self.token:
-            raise RuntimeError("Authentication failed: token not found in response.")
 
-        # Discover cards (children if parent, or student profile)
-        clean_id = self.username.lstrip("SGsg")
-        try:
-            cards_res = self._request("GET", f"/v1/students/{clean_id}/cards")
-            self.cards = cards_res.get("cards", [])
-        except Exception:
-            self.cards = []
+        # Case 1: Multiple choices (e.g. parent account with multiple daughters)
+        if "choices" in res and res.get("choices"):
+            for ch in res["choices"]:
+                ident = ch.get("ident")
+                sub_payload = {
+                    "ident": ident,
+                    "pass": self.password,
+                    "uid": self.username
+                }
+                sub_res = self._request("POST", "/v1/auth/login", data=sub_payload)
+                token = sub_res.get("token")
+                num_id = "".join(filter(str.isdigit, ident))
 
-        if not self.cards:
-            # Fallback card for direct student account
-            self.cards = [{
-                "ident": self.username,
-                "usrId": clean_id,
-                "firstName": res.get("firstName", ""),
-                "lastName": res.get("lastName", ""),
-                "schName": "Scuola"
-            }]
+                student_name = f"{sub_res.get('firstName', '')} {sub_res.get('lastName', '')}".strip()
+                school_name = ch.get("school", "")
+                try:
+                    card_res = self._request("GET", f"/v1/students/{num_id}/card", token=token)
+                    card = card_res.get("card", {})
+                    c_name = f"{card.get('firstName', '')} {card.get('lastName', '')}".strip()
+                    if c_name:
+                        student_name = c_name
+                    c_school = f"{card.get('schName', '')} {card.get('schDedication', '')}".strip()
+                    if c_school:
+                        school_name = c_school
+                except Exception:
+                    pass
+
+                self.sessions[ident] = {
+                    "ident": ident,
+                    "num_id": num_id,
+                    "name": student_name,
+                    "school": school_name,
+                    "token": token,
+                    "expire": sub_res.get("expire")
+                }
+            self.account_name = self.username
+
+        # Case 2: Single direct login
+        elif res.get("token"):
+            ident = res.get("ident", self.username)
+            token = res.get("token")
+            num_id = "".join(filter(str.isdigit, ident))
+            student_name = f"{res.get('firstName', '')} {res.get('lastName', '')}".strip()
+            school_name = ""
+            try:
+                card_res = self._request("GET", f"/v1/students/{num_id}/card", token=token)
+                card = card_res.get("card", {})
+                c_name = f"{card.get('firstName', '')} {card.get('lastName', '')}".strip()
+                if c_name:
+                    student_name = c_name
+                school_name = f"{card.get('schName', '')} {card.get('schDedication', '')}".strip()
+            except Exception:
+                pass
+
+            self.sessions[ident] = {
+                "ident": ident,
+                "num_id": num_id,
+                "name": student_name,
+                "school": school_name,
+                "token": token,
+                "expire": res.get("expire")
+            }
+            self.account_name = student_name
+        else:
+            raise RuntimeError("Authentication failed: no token or choices in response.")
 
     def get_target_students(self, filter_student: Optional[str] = None) -> List[Dict[str, Any]]:
-        if not self.cards:
-            return []
+        all_students = list(self.sessions.values())
         if not filter_student:
-            return self.cards
+            return all_students
 
         filt = filter_student.lower().strip()
         matched = [
-            c for c in self.cards
-            if filt in c.get("firstName", "").lower()
-            or filt in c.get("lastName", "").lower()
-            or filt == str(c.get("usrId", ""))
-            or filt in c.get("ident", "").lower()
+            s for s in all_students
+            if filt in s["name"].lower()
+            or filt in s["ident"].lower()
+            or filt == s["num_id"]
         ]
-        return matched if matched else self.cards
+        return matched if matched else all_students
 
-    def get_agenda(self, student_id: str, start_date: str, end_date: str) -> List[Dict[str, Any]]:
-        # Dates expected as YYYYMMDD in URL path
+    def get_agenda(self, student: Dict[str, Any], start_date: str, end_date: str) -> List[Dict[str, Any]]:
         s_clean = start_date.replace("-", "")
         e_clean = end_date.replace("-", "")
-        res = self._request("GET", f"/v1/students/{student_id}/agenda/all/{s_clean}/{e_clean}")
+        num_id = student["num_id"]
+        token = student["token"]
+        res = self._request("GET", f"/v1/students/{num_id}/agenda/all/{s_clean}/{e_clean}", token=token)
         return res.get("agenda", [])
 
-    def get_noticeboard(self, student_id: str) -> List[Dict[str, Any]]:
-        res = self._request("GET", f"/v1/students/{student_id}/noticeboard")
+    def get_noticeboard(self, student: Dict[str, Any]) -> List[Dict[str, Any]]:
+        num_id = student["num_id"]
+        token = student["token"]
+        res = self._request("GET", f"/v1/students/{num_id}/noticeboard", token=token)
         return res.get("items", [])
 
-    def get_lessons(self, student_id: str, day: Optional[str] = None) -> List[Dict[str, Any]]:
+    def get_lessons(self, student: Dict[str, Any], day: Optional[str] = None) -> List[Dict[str, Any]]:
         if not day:
             day = datetime.date.today().strftime("%Y%m%d")
         else:
             day = day.replace("-", "")
-        res = self._request("GET", f"/v1/students/{student_id}/lessons/{day}")
+        num_id = student["num_id"]
+        token = student["token"]
+        res = self._request("GET", f"/v1/students/{num_id}/lessons/{day}", token=token)
         return res.get("lessons", [])
 
-    def get_grades(self, student_id: str) -> List[Dict[str, Any]]:
-        res = self._request("GET", f"/v1/students/{student_id}/grades")
+    def get_grades(self, student: Dict[str, Any]) -> List[Dict[str, Any]]:
+        num_id = student["num_id"]
+        token = student["token"]
+        res = self._request("GET", f"/v1/students/{num_id}/grades", token=token)
         return res.get("grades", [])
 
 
 def print_status(client: ClasseVivaClient, as_json: bool = False):
+    students = list(client.sessions.values())
     info = {
-        "authenticated": bool(client.token),
-        "username": client.username,
-        "name": f"{client.user_data.get('firstName', '')} {client.user_data.get('lastName', '')}".strip(),
-        "release": client.user_data.get("release"),
-        "expire": client.user_data.get("expire"),
+        "authenticated": bool(client.sessions),
+        "account": client.username,
         "students": [
             {
-                "name": f"{c.get('firstName', '')} {c.get('lastName', '')}".strip(),
-                "student_id": c.get("usrId"),
-                "ident": c.get("ident"),
-                "school": f"{c.get('schName', '')} {c.get('schDedication', '')}".strip()
+                "name": s["name"],
+                "student_id": s["num_id"],
+                "ident": s["ident"],
+                "school": s["school"],
+                "session_expires": s.get("expire")
             }
-            for c in client.cards
+            for s in students
         ]
     }
     if as_json:
@@ -192,11 +240,12 @@ def print_status(client: ClasseVivaClient, as_json: bool = False):
     print("\n============================================================")
     print("  CLASSEVIVA — STATO CONNESSIONE")
     print("============================================================")
-    print(f"Utente:    {info['username']} ({info['name']})")
-    print(f"Sessione:  Scadenza {info['expire']}")
-    print(f"Studenti associati ({len(info['students'])}):")
+    print(f"Account:              {info['account']}")
+    print(f"Profili collegati:    {len(info['students'])}")
     for s in info["students"]:
-        print(f"  • {s['name']} (ID: {s['student_id']}) — {s['school']}")
+        print(f"  • {s['name']} (ID: {s['student_id']} / {s['ident']})")
+        print(f"    Scuola:    {s['school']}")
+        print(f"    Sessione:  Scadenza {s['session_expires']}")
     print("")
 
 
@@ -208,47 +257,40 @@ def print_compiti(client: ClasseVivaClient, students: List[Dict[str, Any]], days
 
     all_results = {}
     for st in students:
-        s_id = str(st.get("usrId"))
-        s_name = f"{st.get('firstName', '')} {st.get('lastName', '')}".strip()
-        agenda = client.get_agenda(s_id, s_date, e_date)
-        
-        # Filter homework entries (AGHW) or keep all
-        homework = [
-            item for item in agenda
-            if item.get("evtCode") == "AGHW" or "compit" in item.get("notes", "").lower()
-        ]
-        # Sort by begin date
-        homework.sort(key=lambda x: x.get("evtDatetimeBegin", ""))
-        all_results[s_name] = homework
+        s_name = st["name"]
+        agenda = client.get_agenda(st, s_date, e_date)
+        agenda.sort(key=lambda x: x.get("evtDatetimeBegin", ""))
+        all_results[s_name] = agenda
 
     if as_json:
         print(json.dumps(all_results, indent=2, ensure_ascii=False))
         return
 
     print(f"\n============================================================")
-    print(f"  CLASSEVIVA — COMPITI IN AGENDA ({s_date} → {e_date})")
+    print(f"  CLASSEVIVA — COMPITI ED EVENTI IN AGENDA ({s_date} → {e_date})")
     print(f"============================================================")
     for s_name, items in all_results.items():
-        print(f"\n🎓 {s_name} ({len(items)} compiti trovati):")
+        print(f"\n🎓 {s_name} ({len(items)} eventi trovati):")
         if not items:
             print("   Nessun compito registrato nel periodo.")
             continue
         for it in items:
-            dt = it.get("evtDatetimeBegin", "")[:10]
-            subj = it.get("subjectDesc", "Varie")
-            teacher = it.get("authorName", "")
-            notes = it.get("notes", "").strip()
-            print(f"  [{dt}] {subj} (Prof. {teacher})")
-            print(f"    📝 {notes}")
+            dt = (it.get("evtDatetimeBegin") or "")[:10]
+            subj = it.get("subjectDesc") or "Scuola"
+            teacher = it.get("authorName") or ""
+            notes = (it.get("notes") or "").strip()
+            teacher_str = f" (Prof. {teacher})" if teacher else ""
+            print(f"  [{dt}] {subj}{teacher_str}")
+            if notes:
+                print(f"    📝 {notes}")
     print("")
 
 
 def print_bacheca(client: ClasseVivaClient, students: List[Dict[str, Any]], limit: int = 10, as_json: bool = False):
     all_results = {}
     for st in students:
-        s_id = str(st.get("usrId"))
-        s_name = f"{st.get('firstName', '')} {st.get('lastName', '')}".strip()
-        items = client.get_noticeboard(s_id)
+        s_name = st["name"]
+        items = client.get_noticeboard(st)
         items.sort(key=lambda x: x.get("pubDT", ""), reverse=True)
         all_results[s_name] = items[:limit]
 
@@ -265,9 +307,9 @@ def print_bacheca(client: ClasseVivaClient, students: List[Dict[str, Any]], limi
             print("   Nessuna comunicazione in bacheca.")
             continue
         for it in items:
-            dt = it.get("pubDT", "")[:10]
-            cat = it.get("cntCategory", "Avviso")
-            title = it.get("cntTitle", "").strip()
+            dt = (it.get("pubDT") or "")[:10]
+            cat = it.get("cntCategory") or "Avviso"
+            title = (it.get("cntTitle") or "").strip()
             has_attach = it.get("cntHasAttach", False)
             attach_str = " 📎 [Allegato PDF]" if has_attach else ""
             read_str = "✓" if it.get("readStatus") else "● [Nuovo]"
@@ -279,9 +321,8 @@ def print_lezioni(client: ClasseVivaClient, students: List[Dict[str, Any]], day:
     target_day = day or datetime.date.today().strftime("%Y-%m-%d")
     all_results = {}
     for st in students:
-        s_id = str(st.get("usrId"))
-        s_name = f"{st.get('firstName', '')} {st.get('lastName', '')}".strip()
-        lessons = client.get_lessons(s_id, target_day)
+        s_name = st["name"]
+        lessons = client.get_lessons(st, target_day)
         all_results[s_name] = lessons
 
     if as_json:
@@ -300,7 +341,7 @@ def print_lezioni(client: ClasseVivaClient, students: List[Dict[str, Any]], day:
             hour = it.get("hour", "")
             subj = it.get("subjectDesc", "")
             teacher = it.get("authorName", "")
-            lesson_arg = it.get("lessonArg", "").strip()
+            lesson_arg = (it.get("lessonArg") or "").strip()
             print(f"  Ora {hour}: {subj} ({teacher})")
             if lesson_arg:
                 print(f"    📖 Argomento: {lesson_arg}")
@@ -310,9 +351,8 @@ def print_lezioni(client: ClasseVivaClient, students: List[Dict[str, Any]], day:
 def print_voti(client: ClasseVivaClient, students: List[Dict[str, Any]], limit: int = 15, as_json: bool = False):
     all_results = {}
     for st in students:
-        s_id = str(st.get("usrId"))
-        s_name = f"{st.get('firstName', '')} {st.get('lastName', '')}".strip()
-        grades = client.get_grades(s_id)
+        s_name = st["name"]
+        grades = client.get_grades(st)
         grades.sort(key=lambda x: x.get("evtDate", ""), reverse=True)
         all_results[s_name] = grades[:limit]
 
@@ -329,11 +369,11 @@ def print_voti(client: ClasseVivaClient, students: List[Dict[str, Any]], limit: 
             print("   Nessuna valutazione registrata.")
             continue
         for it in items:
-            dt = it.get("evtDate", "")[:10]
-            subj = it.get("subjectDesc", "")
-            val = it.get("displayValue", "")
-            notes = it.get("notesForFamily", "") or it.get("notes", "")
-            component = it.get("componentDesc", "")
+            dt = (it.get("evtDate") or "")[:10]
+            subj = it.get("subjectDesc") or ""
+            val = it.get("displayValue") or ""
+            notes = (it.get("notesForFamily") or it.get("notes") or "").strip()
+            component = it.get("componentDesc") or ""
             print(f"  [{dt}] {subj}: VOTO {val} ({component})")
             if notes:
                 print(f"    Nota docente: {notes}")
