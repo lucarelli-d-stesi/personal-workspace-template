@@ -49,6 +49,19 @@ When an activity involves creating, modifying, or cloning software tools, script
   - The worklog (`areas/<area>/worklog/<id>.md`) tracks daily implementation steps.
   - General lessons learned and reusable patterns are harvested into `knowledge/` or personal `skills/`.
 
+## External sources (suggested and personal)
+
+External repositories, legal corpora, and architectural blueprints are managed as references rather than bloated local copies:
+- **Framework Suggested Sources (`knowledge/sources/<id>.md`)**:
+  Curated reference repositories provided by the framework with `profile: suggested`. The LLM proactively suggests them when conversations or tasks match declared `triggers` or domain tags, without requiring upfront cloning.
+- **Instance Personal Sources (`<instance_dir>/reference/sources/<id>.md`)**:
+  Adopted or custom sources configured for the individual with `profile: personal` and `status: active`.
+  - **Thin Overlay Pattern**: When activating a source already present in the framework catalog (`knowledge/sources/<id>.md`), the instance file acts as a thin overlay specifying `source_ref: knowledge/sources/<id>.md` and local area mappings (`areas: [...]`). Technical metadata, collection paths, and fetch rules remain centralized in the framework (DRY).
+  - The thin overlay is indexed by `zg`, enabling associative recall while avoiding content redundancy.
+- **Access Archetypes**:
+  - `content`: Massive document or normative collections (e.g. `italia-corpus`). Accessed via `remote-on-demand` raw URLs for specific articles/files; never cloned in bulk or fully indexed. Extracted conclusions are harvested into `knowledge/`.
+  - `method`: Architectural blueprints and DevOps templates (e.g. `cetmix-tower`). Consulted as engineering patterns or cloned on-demand into `projects/<project-name>/` as an independent repository.
+
 ## Stable ids
 
 Backlog items use `<area>-<NNN>` (e.g. `home-012`): assigned once, **never

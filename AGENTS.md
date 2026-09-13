@@ -109,3 +109,20 @@ Il workspace può girare su ambienti differenti (VM Linux, WSL2, macOS, bare-met
 2. **Audit del Deploy (`setup/status.sh` o `setup/bootstrap.sh --check`)**:
    - Se emergono dubbi sullo stato del setup, allineamento git o tool mancanti, esegui o consiglia `bash setup/status.sh` per un quadro diagnostico immediato prima di avviare le attività.
 
+---
+
+## 6. Fonti Esterne: Suggerite (Framework) e Personali (Istanza)
+
+Il POS distingue chiaramente tra fonti esterne di riferimento raccomandate a livello generale e fonti attive adottate dal singolo individuo:
+
+1. **Fonti Suggerite nel Framework (`knowledge/sources/`)**:
+   - Repository esterni, normative o blueprint referenziati come risorsa generale (es. `italia-corpus` per la legislazione italiana, `cetmix-tower` per l'architettura DevOps Odoo).
+   - **Comportamento dell'Agente (Proactive Suggestion)**: Quando l'utente affronta un problema o pone domande su domini pertinenti (es. contratti, concorsi, enti locali, terzo settore, PA per Italia Corpus), l'agente **propone proattivamente la fonte all'utente** senza che sia necessario averla clonata in anticipo.
+   - **Accesso on-demand puntuale**: Per grandi moli documentali (come Italia Corpus con 280.000 atti), l'agente non clona né indicizza in blocco, ma effettua fetch puntuali dei singoli atti via URL raw su GitHub.
+2. **Fonti Personali Indicizzate nell'Istanza (`<instance_dir>/reference/sources/`)**:
+   - Quando l'utente adotta una fonte già presente nel catalogo del framework, crea un **Thin Overlay** (`source_ref: knowledge/sources/<id>.md`) in `reference/sources/<nome>.md`. La scheda personale contiene solo la mappatura sulle proprie aree di vita (`areas: [...]`), evitando qualsiasi duplicazione di URL o percorsi tecnici.
+   - Per fonti private o non presenti nel framework, la scheda contiene la specifica completa locale.
+   - **Indicizzazione Semantica Locale (`zg`)**: La scheda descrittiva è indicizzata dal motore semantico (`zg`), permettendo all'agente di richiamarla istantaneamente durante kickoff semantici o dynamic pivot.
+   - **Distillazione**: L'esperienza e le sintesi derivate dalla consultazione della fonte confluiscono nelle note personali di `knowledge/`.
+
+

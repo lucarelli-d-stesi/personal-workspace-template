@@ -1,12 +1,17 @@
 ---
 id: source-{{ID}}
 name: {{NAME}}
+profile: suggested # suggested (framework-level catalog) | personal (active in instance)
+status: suggested # suggested | active
 type: content # content | method | mixed
 url: https://github.com/{{ORG}}/{{REPO}}
 access: remote-on-demand # remote-on-demand | local-sparse | local-clone
 raw_base_url: # optional: for remote-on-demand markdown/raw fetching
 local_path: # optional: e.g. ~/repos/{{REPO}} if cloned locally outside workspace
 tags: [tag1, tag2]
+triggers:
+  - trigger keyword or condition 1
+  - trigger keyword or condition 2
 derived_skills: [] # optional: links to local skills informed by this source
 ---
 
@@ -22,3 +27,28 @@ Brief description of what this repository contains and why it is mapped as a sou
 - **Access mode**: (e.g. read on-demand via raw URL, or check local clone in `local_path`).
 - **Never mirror blindly**: extract only actionable conclusions, patterns, or facts into `knowledge/` or `skills/`.
 - Let the local semantic search (`zg`) index the distilled knowledge rather than the raw external repository.
+
+---
+
+## Thin Overlay Pattern (Instance Adoption)
+
+When adopting a source already cataloged in the framework (`knowledge/sources/<id>.md`) into your personal instance (`<instance_dir>/reference/sources/<id>.md`), do not duplicate technical URLs or paths. Use a thin overlay:
+
+```yaml
+---
+id: source-{{ID}}
+name: {{NAME}}
+source_ref: knowledge/sources/{{ID}}.md
+profile: personal
+status: active
+areas: [area1, area2]
+---
+
+# {{NAME}} — Attivazione Personale (Thin Overlay)
+
+Vedi specifica tecnica completa in `knowledge/sources/{{ID}}.md`.
+
+## Mappatura Aree Personali
+- **`area1/`**: scopo e uso
+```
+

@@ -29,7 +29,21 @@ whenever a new reference file is created — this INDEX is the routing map.
 |---|---|
 | Adapter contract for external task systems | `../bridges/CONTRACT.md` |
 
+## Suggested External Sources (Fonti Suggerite)
+
+Catalogo di fonti e repository esterni di riferimento raccomandati a livello di framework. L'LLM le propone proattivamente all'utente quando emergono necessità o domande pertinenti, senza richiederne la clonazione integrale in locale.
+
+| Topic / Dominio | Fonte | File / Riferimento | Archetipo / Accesso |
+|---|---|---|---|
+| Panoramica & regole di suggerimento | Catalogo Fonti Suggerite | `sources/README.md` | Policy & lifecycle |
+| Legislazione italiana, PA, Terzo Settore (Normattiva) | Italia Corpus (`ahmeabd/italia-corpus`) | `sources/italia-corpus.md` | Content (`remote-on-demand`) |
+| Blueprint DevOps Odoo, Docker, Traefik | Cetmix Tower (`cetmix/cetmix-tower`) | `sources/cetmix-tower.md` | Method (`local-clone` / blueprint) |
+| Google Workspace (Gmail, Calendar, Drive via MCP) | Google Workspace MCP (`taylorwilsdon/google_workspace_mcp`) | `sources/google-workspace-mcp.md` | Method (`uvx workspace-mcp`) |
+| Registro elettronico scolastico, compiti, circolari | Spaggiari ClasseViva (`Lioydiano/Classeviva`) | `sources/classeviva.md` | Method (`python3 setup/classeviva-cli.py`) |
+
+
 ## Instance layout
 
 The per-person structure (areas, backlog, profile, inbox, personal skills and sources) is defined in
 `kernel/conventions.md`. Templates live in `setup/templates/`.
+

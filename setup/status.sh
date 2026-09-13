@@ -284,9 +284,44 @@ fi
 echo ""
 
 # -------------------------------------------------------------
-# 6. Per-Machine Profile
+# 6. Integrazioni Esterne (MCP & Connettori)
 # -------------------------------------------------------------
-echo -e "${BOLD}6. Profilo Macchina (machines/<id>.md)${NC}"
+echo -e "${BOLD}6. Integrazioni Esterne (MCP & Connettori)${NC}"
+if command -v uvx &>/dev/null; then
+    ok "Runner uvx: disponibile ($(uvx --version 2>/dev/null || echo 'ok'))"
+else
+    info "Runner uvx: non presente in PATH (necessario per workspace-mcp)"
+fi
+
+GOOGLE_ENV="$USER_HOME/.config/pos/google.env"
+if [ -f "$GOOGLE_ENV" ]; then
+    CLIENT_ID=$(grep -E '^[[:space:]]*GOOGLE_OAUTH_CLIENT_ID=' "$GOOGLE_ENV" | cut -d= -f2- | tr -d '"'\'' ' || true)
+    if [ -n "$CLIENT_ID" ] && [[ "$CLIENT_ID" != *"your-client-id"* ]]; then
+        ok "Google Workspace MCP: configurato ($GOOGLE_ENV)"
+    else
+        info "Google Workspace MCP: file google.env presente (credenziali in attesa di configurazione)"
+    fi
+else
+    info "Google Workspace MCP: non configurato (attivabile con: bash setup/setup-google-workspace-mcp.sh)"
+fi
+
+CLASSEVIVA_ENV="$USER_HOME/.config/pos/classeviva.env"
+if [ -f "$CLASSEVIVA_ENV" ]; then
+    CV_USER=$(grep -E '^[[:space:]]*CLASSEVIVA_USERNAME=' "$CLASSEVIVA_ENV" | cut -d= -f2- | tr -d '"'\'' ' || true)
+    if [ -n "$CV_USER" ] && [[ "$CV_USER" != *"your-username"* ]]; then
+        ok "Spaggiari ClasseViva: configurato ($CLASSEVIVA_ENV, utente: $CV_USER)"
+    else
+        info "Spaggiari ClasseViva: file presente (in attesa di credenziali)"
+    fi
+else
+    info "Spaggiari ClasseViva: non configurato (attivabile con template: ~/.config/pos/classeviva.env)"
+fi
+echo ""
+
+# -------------------------------------------------------------
+# 7. Per-Machine Profile
+# -------------------------------------------------------------
+echo -e "${BOLD}7. Profilo Macchina (machines/<id>.md)${NC}"
 if [ -n "$INSTANCE_NAME" ]; then
     PROFILE_FILE="$PERSONAL_DIR/machines/${MACHINE_ID}.md"
     if [ -f "$PROFILE_FILE" ]; then
