@@ -1,5 +1,12 @@
 .git/
-reference/
+/reference/
 knowledge/stesi-odoo-reference
-node_modules/
 .zvec-grep/
+node_modules/
+.venv/
+venv/
+target/
+dist/
+build/
+__pycache__/
+*.egg-info/

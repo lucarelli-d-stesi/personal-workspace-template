@@ -264,6 +264,7 @@ mkdir -p "$PERSONAL_DIR/reference/sources"
 mkdir -p "$PERSONAL_DIR/inbox"
 mkdir -p "$PERSONAL_DIR/journal"
 mkdir -p "$PERSONAL_DIR/skills"
+mkdir -p "$PERSONAL_DIR/projects"
 
 # Seed profile templates if missing
 for tpl in "$SETUP_DIR/templates/profile"/*-TEMPLATE.md; do
@@ -418,6 +419,48 @@ EOF
     ok "Profilo macchina machines/${MACHINE_ID}.md generato con successo"
 else
     ok "Profilo macchina machines/${MACHINE_ID}.md già presente"
+fi
+
+# -------------------------------------------------------------
+# 5c. Functional Projects Directory Setup (projects/)
+# -------------------------------------------------------------
+info "Verifica directory progetti funzionali (projects/)..."
+mkdir -p "$PERSONAL_DIR/projects"
+if [ ! -f "$PERSONAL_DIR/projects/README.md" ]; then
+    cat << 'PROJECTS_EOF' > "$PERSONAL_DIR/projects/README.md"
+# Cartelle di Progetto (Functional Project Folders)
+
+Questa cartella ospita i repository di codice software, tool, estensioni e cloni locali di sviluppo.
+
+## Convenzioni
+
+1. **Ciascuna sottocartella è un repository Git indipendente**:
+   - Ha il proprio file `.git/`, la propria storia, i propri branch e i propri remote (es. GitHub).
+   - Non viene committata nel repository personale: l'intera cartella `projects/*/` è esclusa dal `.gitignore` dell'istanza.
+2. **Separazione tra POS e Codice**:
+   - Nel POS (`areas/<area>/` e `backlog/items/`): risiedono requisiti, architettura, decisioni (spec) e avanzamento (worklog).
+   - Qui in `projects/<nome>/`: risiede esclusivamente il codice sorgente del software, i test, il Dockerfile e i file di build.
+3. **Storage alternativo / Symlink**:
+   - Se preferisci mantenere i cloni in una directory esterna (es. `~/repos/mio-tool`), puoi semplicemente creare un symlink:
+     `ln -s ~/repos/mio-tool projects/mio-tool`
+PROJECTS_EOF
+    ok "Creato projects/README.md nell'istanza"
+fi
+
+# Ensure projects/*/ is in personal instance .gitignore
+if [ -f "$PERSONAL_DIR/.gitignore" ]; then
+    if ! grep -q 'projects/' "$PERSONAL_DIR/.gitignore"; then
+        echo '' >> "$PERSONAL_DIR/.gitignore"
+        echo '# Functional project folders (independent git repos)' >> "$PERSONAL_DIR/.gitignore"
+        echo 'projects/*/' >> "$PERSONAL_DIR/.gitignore"
+        ok "Aggiunto projects/*/ a .gitignore dell'istanza"
+    fi
+else
+    cat << 'GITIGNORE_EOF' > "$PERSONAL_DIR/.gitignore"
+# Functional project folders (independent git repos)
+projects/*/
+GITIGNORE_EOF
+    ok "Creato .gitignore dell'istanza con esclusione projects/*/"
 fi
 
 # -------------------------------------------------------------

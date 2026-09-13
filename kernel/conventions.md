@@ -32,10 +32,22 @@
 │   ├── specs/<item>.md     # requirements, Summary-first
 │   └── worklog/<item>.md   # append-only diary
 ├── backlog/items/<id>.md   # local-first activities (see backlog-item template)
+├── projects/               # [GITIGNORED] functional project folders & independent git repos
 ├── inbox/                  # staged lessons learned, consolidated at weekly review
 └── journal/                # optional cross-area diary
 ```
 
+## Functional project folders (`projects/`)
+
+When an activity involves creating, modifying, or cloning software tools, scripts, or external code:
+- The code lives in `<instance_dir>/projects/<project-name>/` (or as a symlink pointing to a local directory such as `~/repos/<project-name>`).
+- Each folder under `projects/` is an **independent Git repository** with its own `.git`, remote origin, and lifecycle.
+- `projects/*/` is strictly `.gitignore`d in the personal instance repo: build artifacts, `node_modules/`, virtual environments, and source code must never bloat or conflict with the personal notes repository.
+- The POS instance maintains the management and context plane:
+  - The backlog item (`backlog/items/<id>.md`) links to the directory via `project_dir: projects/<project-name>`.
+  - The architectural spec (`areas/<area>/specs/<id>.md`) documents requirements, designs, and decisions.
+  - The worklog (`areas/<area>/worklog/<id>.md`) tracks daily implementation steps.
+  - General lessons learned and reusable patterns are harvested into `knowledge/` or personal `skills/`.
 
 ## Stable ids
 

@@ -53,6 +53,7 @@ personal-workspace/                     # FRAMEWORK / BASE OPERATIVA (Condivisa 
         ├── areas/                      # TUTTI I FILONI DI ATTIVITÀ DELL'UTENTE
         │   └── <area>/                 # STATUS.md, context.md, specs/, worklog/
         ├── backlog/items/              # Item e task di tutti i filoni (<area>-<NNN>.md)
+        ├── projects/                   # [GITIGNORED] Cartelle funzionali e repository di codice autonomi
         ├── inbox/                      # Cattura rapida e note grezze
         └── journal/                    # Diario cross-area
 ```
@@ -65,6 +66,10 @@ personal-workspace/                     # FRAMEWORK / BASE OPERATIVA (Condivisa 
    - Ogni task operativo, spec, worklog o aggiornamento di stato va scritto e mantenuto ESCLUSIVAMENTE dentro `<instance_dir>/areas/<area>/` e `<instance_dir>/backlog/items/`.
 3. **Organic Discovery (Nessuna intervista iniziale)**:
    - Non avviare questionari o interviste a freddo. Aree, attività e profilo emergono organicamente dalle richieste e dal lavoro quotidiano.
+4. **Sviluppo Software e Cloni di Repository (`projects/`)**:
+   - Quando un task richiede di sviluppare un nuovo software/tool o clonare repository esterni (es. estensioni Odoo, CLI, script, blueprint), opera sempre dentro `<instance_dir>/projects/<nome-progetto>/`.
+   - Ciascuna cartella in `projects/` è un **repository Git indipendente** (con il proprio `.git` e remote); non innestare mai repository Git non tracciati né committare codice o dipendenze nel repo personale.
+   - Nel POS mantieni esclusivamente la governance: item di backlog (`project_dir: projects/<nome-progetto>`), spec architetturale e worklog. A completamento, distilla le lezioni apprese in `knowledge/` o nuove skill.
 
 ---
 
