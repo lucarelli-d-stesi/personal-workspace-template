@@ -21,4 +21,7 @@ knowledge/stesi-odoo-reference
 # Instance-specific skills linked locally from personal repo
 .agents/skills/odoo-*
 
-
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
