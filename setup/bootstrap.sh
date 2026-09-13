@@ -69,6 +69,9 @@ run_privileged() {
 NON_INTERACTIVE=false
 for arg in "$@"; do
     case "$arg" in
+        --check|-c)
+            exec bash "$SETUP_DIR/status.sh"
+            ;;
         --yes|-y) NON_INTERACTIVE=true ;;
     esac
 done
@@ -92,30 +95,58 @@ fi
 ok "Esecuzione con utente non-root ($(id -un))"
 
 # -------------------------------------------------------------
-# 1. OS & Shell Detection
+# 1. OS, Machine & Scenario Detection
 # -------------------------------------------------------------
-info "Rilevamento OS e shell..."
+info "Rilevamento macchina, scenario e shell..."
+
+detect_machine_id() {
+    local host slug
+    host=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo unknown)
+    slug=$(printf '%s' "$host" | tr '[:upper:]' '[:lower:]' \
+        | tr -c 'a-z0-9' '-' | sed 's/-\{2,\}/-/g; s/^-//; s/-$//')
+    printf '%s\n' "${slug:-unknown}"
+}
+
+detect_env_scenario() {
+    case "$(uname -s)" in
+        Darwin) echo "mac"; return ;;
+    esac
+    if [ -n "${TERMUX_VERSION:-}" ] || [[ "${PREFIX:-}" == *com.termux* ]]; then
+        echo "termux"; return
+    fi
+    if [ -n "${WSL_DISTRO_NAME:-}" ] || grep -qi microsoft /proc/version 2>/dev/null; then
+        echo "wsl"; return
+    fi
+    local virt
+    virt=$(systemd-detect-virt 2>/dev/null || echo none)
+    if [ -n "$virt" ] && [ "$virt" != "none" ]; then
+        echo "vm"; return
+    fi
+    echo "linux"
+}
+
+MACHINE_ID=$(detect_machine_id)
+SCENARIO=$(detect_env_scenario)
 OS="$(uname -s)"
 case "$OS" in
-    Linux)
-        if grep -qi microsoft /proc/version 2>/dev/null; then
-            OS_FAMILY="wsl"
-        else
-            OS_FAMILY="linux"
-        fi
-        ;;
-    Darwin)
-        OS_FAMILY="macos"
-        ;;
-    *)
-        OS_FAMILY="other"
-        ;;
+    Linux)  OS_FAMILY="$SCENARIO" ;;
+    Darwin) OS_FAMILY="macos" ;;
+    *)      OS_FAMILY="other" ;;
 esac
 
 RC_FILE="$USER_HOME/.bashrc"
 [ -n "${ZSH_VERSION:-}" ] && RC_FILE="$USER_HOME/.zshrc"
 [ "$OS_FAMILY" = "macos" ] && [ -f "$USER_HOME/.zshrc" ] && RC_FILE="$USER_HOME/.zshrc"
-ok "Ambiente rilevato: $OS_FAMILY (shell rc: $RC_FILE)"
+
+# Ensure ~/.local/bin is in PATH in shell rc
+if [ -f "$RC_FILE" ] && ! grep -q '\.local/bin' "$RC_FILE"; then
+    echo '' >> "$RC_FILE"
+    echo '# [pos] User local bin' >> "$RC_FILE"
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$RC_FILE"
+    ok "Aggiunto ~/.local/bin a PATH in $RC_FILE"
+fi
+
+ok "Macchina: $MACHINE_ID | Scenario: $SCENARIO (shell rc: $RC_FILE)"
 
 # -------------------------------------------------------------
 # 2. Disk Encryption Check (Privacy at Rest)
@@ -272,6 +303,124 @@ HOOK_EOF
 fi
 
 # -------------------------------------------------------------
+# 5b. Per-Machine Profile Setup (machines/<id>.md)
+# -------------------------------------------------------------
+info "Verifica profilo macchina locale (machines/${MACHINE_ID}.md)..."
+mkdir -p "$PERSONAL_DIR/machines"
+if [ ! -f "$PERSONAL_DIR/machines/README.md" ]; then
+    cat << 'README_EOF' > "$PERSONAL_DIR/machines/README.md"
+# Profili Macchina
+
+Un file per macchina, nome = slug dell'hostname (`detect_machine_id`).
+
+Il repo personale è sincronizzato via git tra le macchine: ognuna scrive **solo
+il proprio** file, così i profili non si sovrascrivono a vicenda e da qualunque
+macchina si vede il parco completo.
+
+Qui va **solo ciò che non è generalizzabile** (risorse hardware reali, percorsi
+locali, tool installati, compiti del nodo, debiti). Se una nota vale per chiunque
+sia su quello scenario (wsl / vm / mac / linux), va in `knowledge/reference/local-environment.md`
+nel framework, passando da `inbox/` come ogni lesson learned.
+
+**Niente segreti**: token, password, chiavi private.
+
+Template: `setup/templates/machine-TEMPLATE.md`
+Convenzione: `knowledge/reference/local-environment.md`
+README_EOF
+    ok "Creato machines/README.md nell'istanza"
+fi
+
+PROFILE_FILE="$PERSONAL_DIR/machines/${MACHINE_ID}.md"
+if [ ! -f "$PROFILE_FILE" ]; then
+    info "Creazione profilo macchina locale: machines/${MACHINE_ID}.md..."
+    
+    # Detect specs
+    CPUS=$(nproc 2>/dev/null || echo "?")
+    RAM_TOTAL="non rilevata"
+    RAM_AVAIL="non rilevata"
+    SWAP_TOTAL="non rilevata"
+    if command -v free &>/dev/null; then
+        RAM_TOTAL=$(free -h | awk '/^Mem:/ {print $2}')
+        RAM_AVAIL=$(free -h | awk '/^Mem:/ {print $7}')
+        SWAP_TOTAL=$(free -h | awk '/^Swap:/ {print $2}')
+    fi
+    DISK_INFO=$(df -h "$WORKSPACE_DIR" 2>/dev/null | awk 'NR==2 {print $2 " totali (" $4 " liberi, " $5 " usato)"}')
+    if [ -f /etc/os-release ]; then
+        OS_PRETTY=$(grep -E '^PRETTY_NAME=' /etc/os-release | cut -d= -f2- | tr -d '"')
+    else
+        OS_PRETTY="$(uname -s) $(uname -r)"
+    fi
+    
+    # Ensure PATH has ~/.local/bin and NVM for tool detection
+    export PATH="$USER_HOME/.local/bin:$PATH"
+    for candidate_dir in "$USER_HOME/.nvm/versions/node" "$HOME/.nvm/versions/node"; do
+        if [ -d "$candidate_dir" ]; then
+            LATEST_NODE=$(find "$candidate_dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -V | tail -n 1)
+            if [ -n "$LATEST_NODE" ] && [ -d "$LATEST_NODE/bin" ]; then
+                export PATH="$LATEST_NODE/bin:$PATH"
+                break
+            fi
+        fi
+    done
+
+    # Detect tools
+    NODE_INFO="assente"
+    command -v node &>/dev/null && NODE_INFO="$(node -v)"
+    PYTHON_INFO="assente"
+    command -v python3 &>/dev/null && PYTHON_INFO="$(python3 --version 2>&1)"
+    DOCKER_INFO="assente"
+    command -v docker &>/dev/null && DOCKER_INFO="$(docker --version | cut -d',' -f1)"
+    CLAUDE_INFO="assente"
+    command -v claude &>/dev/null && CLAUDE_INFO="$(claude --version 2>/dev/null || echo 'installato')"
+    AGY_INFO="assente"
+    command -v agy &>/dev/null && AGY_INFO="$(agy --version 2>/dev/null || echo 'installato')"
+    CODEX_INFO="assente"
+    command -v codex &>/dev/null && CODEX_INFO="$(codex --version 2>/dev/null || echo 'installato')"
+    
+    TODAY=$(date +%Y-%m-%d)
+    
+    cat << EOF > "$PROFILE_FILE"
+# Macchina: ${MACHINE_ID}
+
+scenario: ${SCENARIO}
+os: ${OS_PRETTY} (kernel $(uname -r))
+ultimo_aggiornamento: ${TODAY}
+
+## A cosa serve questa macchina
+
+<Descrivi il ruolo di questa macchina: es. ambiente primario di sviluppo / portatile per trasferte / server domestico>
+
+## Risorse Hardware
+
+- **CPU**: ${CPUS} vCPU / $(uname -m)
+- **RAM**: ${RAM_TOTAL} totale (${RAM_AVAIL} disponibile) / Swap: ${SWAP_TOTAL}
+- **Disco**: ${DISK_INFO}
+
+## Tool e Ambienti Locali
+
+- **Node.js**: ${NODE_INFO}
+- **Python**: ${PYTHON_INFO}
+- **Docker**: ${DOCKER_INFO}
+- **Claude Code**: ${CLAUDE_INFO}
+- **Antigravity CLI**: ${AGY_INFO}
+- **Codex CLI**: ${CODEX_INFO}
+- **zvec-grep (zg)**: attivo (modello local/potion-code-16m-v2)
+- **Hook pre-push**: attivo (gitleaks)
+
+## Specificità di questa macchina
+
+<Eventuali porte locali impegnate, percorsi particolari, dischi esterni montati>
+
+## Da sistemare / Debito noto
+
+<Nessun debito noto rilevato al bootstrap>
+EOF
+    ok "Profilo macchina machines/${MACHINE_ID}.md generato con successo"
+else
+    ok "Profilo macchina machines/${MACHINE_ID}.md già presente"
+fi
+
+# -------------------------------------------------------------
 # 6. Skill Partitioning & Dynamic Linking
 # -------------------------------------------------------------
 info "Configurazione e collegamento delle skill..."
@@ -390,6 +539,13 @@ echo "  Framework base:       $WORKSPACE_DIR"
 echo "  Istanza personale:    $PERSONAL_DIR"
 echo "  Skill generiche:      $WORKSPACE_DIR/.agents/skills (project-management, text-drafting)"
 echo "  Skill personali:      $PERSONAL_DIR/skills"
+echo "  Profilo macchina:     $PERSONAL_DIR/machines/${MACHINE_ID}.md"
+echo ""
+echo "  AUDIT & MONITORAGGIO AMBIENTE:"
+echo "  Puoi verificare in ogni momento lo stato del deploy e della macchina con:"
+echo "    bash setup/bootstrap.sh --check"
+echo "    # oppure"
+echo "    bash setup/status.sh"
 echo ""
 echo "  NOTA SUL DISCOVERY (Nessuna intervista iniziale):"
 echo "  Non è prevista alcuna intervista a freddo. Il discovery avviene in"

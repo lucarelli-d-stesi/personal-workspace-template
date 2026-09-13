@@ -20,7 +20,8 @@ whenever a new reference file is created — this INDEX is the routing map.
 
 | Topic | File |
 |---|---|
-| _(none yet — domain references grow from use)_ | |
+| Local environment: scenarios (vm/wsl/mac/linux), multi-machine setup, local profiles | `reference/local-environment.md` |
+| _(other domain references grow from use)_ | |
 
 ## Bridges
 

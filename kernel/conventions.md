@@ -22,6 +22,7 @@
 <instance_dir>/             # private instance repo, user-chosen name
 ├── CLAUDE.md               # generated from setup/templates/CLAUDE.template.md
 ├── profile/                # emotional backbone: values, style, boundaries, observations
+├── machines/<id>.md        # per-machine profile: hardware specs, installed tools, scenario
 ├── skills/                 # individual domain skills (e.g. specialized dev, study, analysis)
 ├── reference/sources/      # catalog of external repos and sources (content & method)
 ├── knowledge/              # personal distilled reference, grows from use

@@ -46,6 +46,7 @@ personal-workspace/                     # FRAMEWORK / BASE OPERATIVA (Condivisa 
 └── personal/                           # [GITIGNORED nel framework] Istanze private individuali
     └── <instance_dir>/                 # Repository privato dell'utente (.pos-config: instance_dir)
         ├── profile/                    # Valori personali, confini, stile, osservazioni
+        ├── machines/<id>.md            # Profilo per-macchina: hardware, scenario, tool locali
         ├── skills/                     # SKILL SPECIALISTICHE PERSONALI (es. odoo-*, latino, ecc.)
         ├── reference/                  # Fonti e reference tecniche private dell'utente
         ├── knowledge/                  # Conoscenza ed esperienza distillata personale
@@ -90,3 +91,16 @@ Le attività personali non sono compartimenti stagni: si collegano per **vicinan
 2. **Boundary Crossing Asimmetrico (Read-Only su richiesta)**:
    - Se l'utente chiede esplicitamente di consultare pattern tecnici aziendali (es. Odoo), l'agente può consultare in sola lettura il workspace STeSI.
    - È categoricamente vietato qualsiasi travaso di dati dal personal workspace verso l'ambiente aziendale.
+
+---
+
+## 5. Asse Macchina e Consapevolezza dell'Ambiente Locale
+
+Il workspace può girare su ambienti differenti (VM Linux, WSL2, macOS, bare-metal). L'agente deve essere consapevole del contesto di esecuzione e dei tool a disposizione:
+
+1. **Profilo Macchina (`machines/<id>.md`)**:
+   - Ogni macchina possiede un file dedicato in `<instance_dir>/machines/<id>.md` (nome = hostname slug, es. `stesi-workspace.md`).
+   - Prima di proporre comandi di sistema, script o esecuzione di tool pesanti, consulta il profilo per verificare: scenario (`vm`, `wsl`, `mac`, `linux`), vCPU/RAM disponibili, Docker runtime e versioni di Node/Python/CLI LLM installate.
+2. **Audit del Deploy (`setup/status.sh` o `setup/bootstrap.sh --check`)**:
+   - Se emergono dubbi sullo stato del setup, allineamento git o tool mancanti, esegui o consiglia `bash setup/status.sh` per un quadro diagnostico immediato prima di avviare le attività.
+

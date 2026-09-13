@@ -12,7 +12,7 @@ personal/
 .DS_Store
 
 # Local machine-specific reference links (e.g. to STeSI on dev machine)
-reference/
+/reference/
 knowledge/stesi-odoo-reference
 
 # Local semantic vector index
