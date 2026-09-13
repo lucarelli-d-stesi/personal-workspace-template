@@ -256,6 +256,15 @@ INSTANCE_NAME=$(basename "$PERSONAL_DIR")
 # 5. Seed Canonical Structure & Templates if Needed
 # -------------------------------------------------------------
 info "Verifica e seeding della struttura canonica dell'istanza..."
+
+# If the instance repository has no README.md, seed initial structure from template
+if [ -d "$SETUP_DIR/templates/personal-instance-TEMPLATE" ] && [ ! -f "$PERSONAL_DIR/README.md" ]; then
+    info "Inizializzazione da template personal-instance-TEMPLATE..."
+    cp -rn "$SETUP_DIR/templates/personal-instance-TEMPLATE/"* "$PERSONAL_DIR/" 2>/dev/null || true
+    [ -f "$PERSONAL_DIR/.gitignore" ] || cp "$SETUP_DIR/templates/personal-instance-TEMPLATE/.gitignore" "$PERSONAL_DIR/" 2>/dev/null || true
+    ok "Struttura iniziale dell'istanza copiata dal template"
+fi
+
 mkdir -p "$PERSONAL_DIR/areas"
 mkdir -p "$PERSONAL_DIR/backlog/items"
 mkdir -p "$PERSONAL_DIR/profile"

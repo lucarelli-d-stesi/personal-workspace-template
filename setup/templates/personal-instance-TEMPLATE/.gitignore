@@ -1,0 +1,17 @@
+# Editor and OS cruft
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Windows metadata
+**:Zone.Identifier
+
+# Binary attachments (kept local, not synced via git)
+**/attachments/
+
+# Functional project folders (each is an independent Git repository)
+projects/*/
+
+# Local machine-specific reference links
+reference/local-*

@@ -1,71 +1,130 @@
-# Personal Workspace — a Personal Operating System (POS)
+# Personal Workspace — Personal Operating System (POS)
 
-A file-based **Personal Operating System**: a stable cognitive architecture that
-lets an LLM assistant (Claude Code or similar) work alongside you on your
-personal and family life — projects, daily activities, hobbies, learning,
-household planning, personal finance — with continuity, method and memory,
-instead of one-off chat sessions.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-The idea follows the shift from chatbots to *personal operating systems*:
-what matters is not the generative model but the architecture around it —
-a **kernel** of non-negotiable principles, an **orchestrator** of procedures,
-a **selective memory** that stays lean and precise, and an **emotional
-backbone** that regulates tone and priorities without ever overriding facts.
-The lineage is the classic one of augmented intelligence (Bush's memex,
-Licklider's man-computer symbiosis, Engelbart's intellect augmentation):
-the human decides, the system prepares, remembers and proposes.
+A file-based, open-source **Personal Operating System (POS)**: a cognitive architecture and operational framework designed for LLM assistants (Claude Code, Antigravity CLI, Codex, etc.) to collaborate alongside you across your entire life — software projects, daily activities, family responsibilities, personal finance, vehicles, and continuous learning — with long-term memory, consistent methodology, and privacy by design.
 
-## Architecture: two repositories
+---
 
-| Repo | Visibility | Contains |
-|---|---|---|
-| **Framework** (this repo) | public | kernel, conventions, templates, playbooks, update channel. Zero personal data — ever. |
-| **Instance** (any repo you choose) | private, one per person | your areas, backlog, worklog, knowledge, profile. Name and structure are yours — setup asks you to indicate it and mounts it inside the framework under `personal/` (gitignored). |
+## 1. Architectural Foundation: Two-Tier Separation
 
-Personal data cannot physically end up in the public repo: the two working
-trees are different repositories. Framework improvements reach instances
-through reviewed migration scripts (`setup/updates/`), never through merges.
+The framework strictly decouples the **agnostic operational engine** from the **individual private context**:
 
-## Core mechanisms
+```
+personal-workspace/                         # 1. SHARED FRAMEWORK (Public / Agnostic Base)
+├── kernel/                                 # Non-negotiable principles & conventions
+├── knowledge/playbooks/                    # Work routines (harvesting, weekly review, GC)
+├── .agents/skills/                         # Generic methodology skills (project-management, text-drafting)
+├── setup/                                  # Dynamic bootstrap, diagnostics & LLM installers
+└── personal/                               # [GITIGNORED] Local mount point for private instances
+    └── <instance_dir>/                     # 2. PRIVATE PERSONAL REPO (Your life context)
+        ├── profile/                        # Emotional backbone (values, style, boundaries)
+        ├── machines/<id>.md                # Per-machine profile (hardware specs, local tools)
+        ├── skills/                         # Specialized personal domain skills
+        ├── reference/sources/              # Curated catalog of external references (content & method)
+        ├── knowledge/                      # Distilled personal insights and experience
+        ├── areas/<area>/                   # Life streams (STATUS.md, context.md, specs/, worklog/)
+        ├── backlog/items/                  # Activities & tasks with stable IDs (<area>-<NNN>.md)
+        └── projects/                       # [GITIGNORED] Independent software repositories
+```
 
-- **Areas** (`areas/<area>/` in your instance) — the unit of work: one folder
-  per life area (family, home, finance, health, hobbies, learning, projects)
-  with `STATUS.md` (dashboard), `context.md` (identity), `specs/`
-  (requirements) and `worklog/` (append-only diary).
-- **Local-first backlog** — activities are plain files with stable ids and a
-  free thread → sprint → task hierarchy, born ready for a future external
-  project-management tool (see `bridges/CONTRACT.md`): when you adopt one,
-  you plug in an adapter — no data migration.
-- **Lazy knowledge** — only `kernel/` and the knowledge INDEX are always
-  loaded; everything else is read on demand and kept within size budgets
-  (see `knowledge/playbooks/knowledge-gc.md`).
-- **Organic harvesting** — the context builds itself from real use: day-to-day work
-  seeds it, an end-of-session routine feeds it, a weekly review consolidates
-  and compacts it. No upfront interview questionnaire needed.
-- **Associative memory** — local semantic vector search (`zg`) surfaces relevant
-  past experiences across areas and notes by conceptual proximity, accommodating
-  dynamic pivots during sessions.
-- **Skill partitioning** — universal methodology skills (project management,
-  text drafting) live in the framework; domain-specific skills (e.g. software development,
-  languages, specialized analysis) stay in each person's private repo.
-- **Emotional backbone** (`profile/` in your instance) — your values, style
-  and boundaries, with explicit provenance (declared vs observed) and
-  confidence. It modulates *how* the assistant works — tone, priorities,
-  when to push back — never *what is true*: a verifiable fact always
-  outranks any opinion, including yours. Entries are periodically
-  challenged so the profile stays a hypothesis, not a cage.
+* **Framework Repo (`personal-workspace`)**:
+  - Completely agnostic of any single individual.
+  - Contains **zero personal data, zero life areas, and zero private tasks**.
+  - Provides the kernel conventions, generic skills, semantic indexing configuration, and automation scripts.
+* **Instance Repo (`personal/<instance_dir>/`)**:
+  - A completely independent, private Git repository owned by each user.
+  - Contains all personal streams of responsibility, private notes, domain skills, and project plans.
+  - Syncs privately via Git across multiple user devices without leaking data to the framework.
 
-## Quick start
+---
 
-Follow [ONBOARDING.md](ONBOARDING.md). In short: clone this repo, run `bash setup/bootstrap.sh`,
-and start working directly on your actual tasks with your assistant.
+## 2. Key Capabilities & Mechanics
 
-## Status
+* **Organic Discovery (Zero Initial Survey)**:
+  No rigid questionnaires or upfront interviews. Life areas, profiles, and priorities emerge organically through real day-to-day interactions.
+* **Associative Semantic Memory (`zg` / `zvec-grep`)**:
+  Built-in local semantic vector search (powered by local embeddings, BM25, and ripgrep). Tasks and ideas are linked by **semantic proximity** across life domains, accommodating dynamic topic pivots during work sessions.
+* **Skill Partitioning**:
+  - **Universal Methodology Skills** (Work Breakdown Structure, project scheduling, formal text drafting) live in the framework (`.agents/skills/`).
+  - **Specialized Domain Skills** (e.g. Odoo framework internals, ancient Greek translation, advanced data science) live in each individual's private instance repo (`skills/`) and are dynamically linked at bootstrap.
+* **Dual-Axis Model: The Machine Axis (`machines/<id>.md`)**:
+  The system detects the local environment scenario (`vm`, `wsl`, `mac`, `linux`, `termux`), hardware resources (vCPU, RAM, swap, disk), and installed CLI tools. Each physical machine maintains its own additive file in `machines/`, preventing Git merge conflicts across multi-device setups.
+* **Functional Project Repositories (`projects/`)**:
+  When tasks require developing software tools or cloning external repositories, they reside in `projects/<project-name>/` as first-class, independent Git repositories, isolated from the personal notes repository.
+* **End-of-Session Harvesting**:
+  At the conclusion of each session, actionable tasks are routed to the backlog, while distilled learnings and reusable architectural insights are harvested into `knowledge/` or refined into skills.
 
-Early stage. Roadmap: bootstrap scripts and skills, then the first bridge
-adapter (Odoo). The framework language is English; your instance uses
-whatever language you prefer.
+---
 
-## License
+## 3. Deployment & Quick Start
 
-[MIT](LICENSE)
+### Prerequisites
+* **Operating System**: Linux (bare-metal, KVM, Proxmox), Windows WSL2, or macOS (Apple Silicon / Intel).
+* **Base Utilities**: `bash` (v4+ recommended), `git`, `curl`, `python3` (v3.10+).
+
+### Step-by-Step Installation
+
+1. **Clone the Framework**:
+   ```bash
+   git clone https://github.com/danielelucarelli1980/personal-workspace.git ~/personal-workspace
+   cd ~/personal-workspace
+   ```
+
+2. **Run the Automated Bootstrap**:
+   ```bash
+   bash setup/bootstrap.sh
+   ```
+   *The bootstrap is 100% user-path agnostic, handles non-root execution safely, configures your private instance repository, establishes semantic indexing (`zg`), links skills, and sets up your AI assistants.*
+
+3. **Bootstrap Options**:
+   * **Unattended / Non-interactive**:
+     ```bash
+     bash setup/bootstrap.sh --yes
+     ```
+   * **Environment Health Check & Audit**:
+     ```bash
+     bash setup/bootstrap.sh --check
+     # or directly:
+     bash setup/status.sh
+     ```
+
+### Local AI Assistant Setup
+The bootstrap includes an installer ([setup/install-llm.sh](setup/install-llm.sh)) supporting:
+* **Claude Code**: Native CLI installation with automated skill links.
+* **Antigravity CLI (`agy`)**: Automated local configuration with the `zvec-grep` MCP semantic tool.
+* **Codex CLI**: Environment scaffolding.
+
+---
+
+## 4. Environment & Deployment Auditing
+
+To ensure that tools, symlinks, vector indices, and machine profiles are properly configured before starting work:
+```bash
+bash setup/status.sh
+```
+This inspects:
+- Git status of framework and personal instance repositories.
+- Hardware resources (CPU cores, RAM availability, disk space, encryption status).
+- Installed tools and CLI environments (Python, Node.js, Docker, Claude Code, Antigravity, Gitleaks).
+- Semantic index coverage (`.zvec-grep/index.zvec`).
+- Per-machine profile freshness.
+
+---
+
+## 5. Sharing & Template Usage
+
+If you want to use this repository as the foundation for your own or your team's Personal Operating System:
+
+1. Click the green **"Use this template"** button on GitHub to create your own repository.
+2. Follow the deployment steps above to initialize your private personal instance.
+3. For personal repository scaffolding, refer to the starter blueprint in [setup/templates/personal-instance-TEMPLATE/](setup/templates/personal-instance-TEMPLATE/).
+
+> **Note on Contributions**:
+> This repository is maintained as an individual operational base and cognitive template. We do not accept Pull Requests. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+---
+
+## 6. License
+
+This project is licensed under the [MIT License](LICENSE) — feel free to adapt, study, and modify it for your own personal and professional needs.
