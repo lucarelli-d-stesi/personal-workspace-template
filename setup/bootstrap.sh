@@ -210,6 +210,8 @@ if [ -n "$CURRENT_INSTANCE" ] && [ -d "$WORKSPACE_DIR/$CURRENT_INSTANCE" ]; then
 else
     echo "  Il framework è condiviso e generico. Le tue attività, valori personali,"
     echo "  fonti, appunti e note private risiedono in un tuo repository privato separato."
+    echo "  TIP: Puoi creare il tuo repo privato partendo dal template standalone:"
+    echo "       https://github.com/danielelucarelli1980/pos-instance-template"
     echo ""
     
     INSTANCE_INPUT=""

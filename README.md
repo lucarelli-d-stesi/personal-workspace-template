@@ -112,13 +112,18 @@ This inspects:
 
 ---
 
-## 5. Sharing & Template Usage
+## 5. Sharing & Template Repositories
 
-If you want to use this repository as the foundation for your own or your team's Personal Operating System:
+If you want to adopt or share this system with family, friends, or colleagues, the setup uses two distinct template repositories:
 
-1. Click the green **"Use this template"** button on GitHub to create your own repository.
-2. Follow the deployment steps above to initialize your private personal instance.
-3. For personal repository scaffolding, refer to the starter blueprint in [setup/templates/personal-instance-TEMPLATE/](setup/templates/personal-instance-TEMPLATE/).
+1. **Framework Engine (This Repository)**:
+   - Click the green **"Use this template"** button above to create your own copy of `personal-workspace` (or clone it directly).
+2. **Personal Instance Starter Template (Completely Separate Repository)**:
+   - Your private life data and notes belong in an isolated, private repository.
+   - Use the standalone starter repository: 👉 **[pos-instance-template](https://github.com/danielelucarelli1980/pos-instance-template)**
+   - Click **"Use this template"** on that repository to generate your own **private** repository (e.g. `yourname-pos`).
+3. **Connect & Run**:
+   - Clone your framework and run `bash setup/bootstrap.sh`. Enter your private repository URL when prompted.
 
 > **Note on Contributions**:
 > This repository is maintained as an individual operational base and cognitive template. We do not accept Pull Requests. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
