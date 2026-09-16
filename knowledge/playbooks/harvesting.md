@@ -37,3 +37,14 @@ propose an entry for `profile/observations.md` with `source: observed`, the
 evidence, and low/medium confidence. The user may accept, amend or refuse.
 Declared entries (`values`, `style`, `boundaries`) are **never** edited by
 the assistant on its own initiative.
+
+## 6. Climate and emotional resonance (optional → `journal/` or `context.md`)
+
+If the session revealed a meaningful emotional climate, heightened life pressure,
+or an unrepeatable life season (e.g. financial strain after an unforeseen expense,
+an intensive caregiving phase for a relative, recovery fatigue, or a family milestone),
+propose capturing this "temperature":
+- Either as a reflective entry in `journal/YYYY-MM-DD.md` (or `YYYY-Www.md`),
+- Or by updating the `## Current phase and climate` section of the relevant area's `context.md`.
+This ensures that narrative identity and life context are not lost behind cold transactional logs.
+
