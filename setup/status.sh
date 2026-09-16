@@ -319,9 +319,9 @@ fi
 echo ""
 
 # -------------------------------------------------------------
-# 7. Per-Machine Profile
+# 7. Per-Machine Profile & Session Tracking
 # -------------------------------------------------------------
-echo -e "${BOLD}7. Profilo Macchina (machines/<id>.md)${NC}"
+echo -e "${BOLD}7. Profilo Macchina & Ultima Sessione${NC}"
 if [ -n "$INSTANCE_NAME" ]; then
     PROFILE_FILE="$PERSONAL_DIR/machines/${MACHINE_ID}.md"
     if [ -f "$PROFILE_FILE" ]; then
@@ -331,6 +331,35 @@ if [ -n "$INSTANCE_NAME" ]; then
         warn "Profilo macchina MANCANTE: personal/$INSTANCE_SLUG/machines/${MACHINE_ID}.md"
         info "Verrà generato automaticamente al prossimo bootstrap o eseguendo setup/bootstrap.sh"
     fi
+
+    # Tracking ultima sessione per-macchina
+    LAST_SESSION_FILE="$PERSONAL_DIR/machines/last-session.md"
+    if [ -f "$LAST_SESSION_FILE" ]; then
+        PREV_MACHINE=$(grep -E '^machine_id:' "$LAST_SESSION_FILE" | head -n 1 | awk '{print $2}' || echo "unknown")
+        if [ "$PREV_MACHINE" != "$MACHINE_ID" ] && [ -n "$PREV_MACHINE" ]; then
+            warn "Switch di macchina rilevato: sessione precedente su '$PREV_MACHINE', attuale su '$MACHINE_ID'"
+        else
+            ok "Macchina invariata rispetto all'ultima sessione ($MACHINE_ID)"
+        fi
+    else
+        info "Inizializzazione file ultima sessione in machines/last-session.md"
+    fi
+
+    cat <<EOF > "$LAST_SESSION_FILE"
+---
+machine_id: $MACHINE_ID
+hostname: $(hostname 2>/dev/null || echo unknown)
+scenario: $SCENARIO
+last_session: $(date -u '+%Y-%m-%dT%H:%M:%SZ')
+---
+
+# Ultima Sessione Attiva
+
+- **Macchina**: \`$MACHINE_ID\`
+- **Scenario**: $SCENARIO
+- **Data e ora UTC**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+EOF
+    info "Aggiornato: personal/$INSTANCE_SLUG/machines/last-session.md"
 else
     warn "Impossibile verificare il profilo macchina: istanza non configurata."
 fi

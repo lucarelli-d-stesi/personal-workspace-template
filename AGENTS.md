@@ -106,7 +106,10 @@ Il workspace può girare su ambienti differenti (VM Linux, WSL2, macOS, bare-met
 1. **Profilo Macchina (`machines/<id>.md`)**:
    - Ogni macchina possiede un file dedicato in `<instance_dir>/machines/<id>.md` (nome = hostname slug, es. `stesi-workspace.md`).
    - Prima di proporre comandi di sistema, script o esecuzione di tool pesanti, consulta il profilo per verificare: scenario (`vm`, `wsl`, `mac`, `linux`), vCPU/RAM disponibili, Docker runtime e versioni di Node/Python/CLI LLM installate.
-2. **Audit del Deploy (`setup/status.sh` o `setup/bootstrap.sh --check`)**:
+2. **Tracciamento Sessione e Rilevamento Switch (`machines/last-session.md`)**:
+   - In `<instance_dir>/machines/last-session.md` viene registrata l'ultima macchina su cui si è svolta una sessione (`machine_id`, data/ora).
+   - **Avvio di sessione su nuova macchina**: all'avvio di una sessione, se l'hostname/machine_id corrente differisce da quanto registrato in `last-session.md` (switch di macchina), l'agente esegue automaticamente `bash setup/status.sh` per verificare la salute del nodo, l'allineamento git e lo stato dell'indice semantico `zg`, aggiornando `last-session.md`.
+3. **Audit del Deploy (`setup/status.sh` o `setup/bootstrap.sh --check`)**:
    - Se emergono dubbi sullo stato del setup, allineamento git o tool mancanti, esegui o consiglia `bash setup/status.sh` per un quadro diagnostico immediato prima di avviare le attività.
 
 ---
