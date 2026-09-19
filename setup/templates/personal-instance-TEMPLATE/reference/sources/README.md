@@ -14,8 +14,8 @@ This directory catalogs external repositories, databases, and third-party codeba
 
 ## Relationship with Framework Suggested Sources (Thin Overlay Pattern)
 
-- The shared framework maintains a general catalog of recommended references in `knowledge/sources/` (e.g. `italia-corpus` for Italian legislation, `cetmix-tower` for DevOps patterns, `google-maps-mcp` for geo tools).
-- When you decide to activate a suggested source for your personal day-to-day workflow, do **NOT** duplicate technical URLs or paths. Instead, create a **Thin Overlay** in this directory (`reference/sources/<id>.md`):
+- The shared framework maintains the **POS Marketplace & Ecosystem Hub** in `knowledge/sources/` (or via the root symlink `marketplace/`), featuring an index in `knowledge/sources/INDEX.md` and a CLI browser (`bash ../setup/marketplace.sh`).
+- When you decide to activate a marketplace source for your personal day-to-day workflow, do **NOT** duplicate technical URLs or paths. Instead, create a **Thin Overlay** in this directory (`reference/sources/<id>.md`):
 
 ```yaml
 ---

@@ -114,19 +114,28 @@ Il workspace può girare su ambienti differenti (VM Linux, WSL2, macOS, bare-met
 
 ---
 
-## 6. Fonti Esterne: Suggerite (Framework) e Personali (Istanza)
+## 6. POS Marketplace & Fonti Esterne (Framework vs Istanza)
 
-Il POS distingue chiaramente tra fonti esterne di riferimento raccomandate a livello generale e fonti attive adottate dal singolo individuo:
+Il POS definisce un modello ad **Ecosystem Hub / Marketplace** che separa gli strumenti pubblicamente disponibili nel framework dalla loro adozione opzionale nel contesto privato del singolo utente:
 
-1. **Fonti Suggerite nel Framework (`knowledge/sources/`)**:
-   - Repository esterni, normative o blueprint referenziati come risorsa generale (es. `italia-corpus` per la legislazione italiana, `cetmix-tower` per l'architettura DevOps Odoo).
-   - **Comportamento dell'Agente (Proactive Suggestion)**: Quando l'utente affronta un problema o pone domande su domini pertinenti (es. contratti, concorsi, enti locali, terzo settore, PA per Italia Corpus), l'agente **propone proattivamente la fonte all'utente** senza che sia necessario averla clonata in anticipo.
-   - **Accesso on-demand puntuale**: Per grandi moli documentali (come Italia Corpus con 280.000 atti), l'agente non clona né indicizza in blocco, ma effettua fetch puntuali dei singoli atti via URL raw su GitHub.
-2. **Fonti Personali Indicizzate nell'Istanza (`<instance_dir>/reference/sources/`)**:
-   - Quando l'utente adotta una fonte già presente nel catalogo del framework, crea un **Thin Overlay** (`source_ref: knowledge/sources/<id>.md`) in `reference/sources/<nome>.md`. La scheda personale contiene solo la mappatura sulle proprie aree di vita (`areas: [...]`), evitando qualsiasi duplicazione di URL o percorsi tecnici.
-   - Per fonti private o non presenti nel framework, la scheda contiene la specifica completa locale.
-   - **Indicizzazione Semantica Locale (`zg`)**: La scheda descrittiva è indicizzata dal motore semantico (`zg`), permettendo all'agente di richiamarla istantaneamente durante kickoff semantici o dynamic pivot.
-   - **Distillazione**: L'esperienza e le sintesi derivate dalla consultazione della fonte confluiscono nelle note personali di `knowledge/`.
+1. **Marketplace del Framework (`knowledge/sources/` e symlink `marketplace/`)**:
+   - Raccoglie la vetrina condivisa di strumenti, connettori e basi di conoscenza:
+     - **Banche Dati / Data Sources** (es. `italia-corpus` per 280.000 leggi e atti italiani).
+     - **Connettori CLI & API** (es. `classeviva` per il registro elettronico scolastico).
+     - **Server MCP** (es. `google-workspace-mcp` per Gmail/Calendar/Drive, `google-maps-mcp` per percorsi e meteo).
+     - **Skill Specialistiche** (es. `publora` per la gestione di 7 piattaforme social contemporaneamente).
+     - **Blueprint Architetturali** (es. `cetmix-tower` per stack DevOps e Docker Odoo).
+   - Vetrina strutturata e consultabile: [`knowledge/sources/INDEX.md`](knowledge/sources/INDEX.md).
+   - Script di ispezione e stato: `bash setup/marketplace.sh` (oppure `python3 setup/marketplace.py --json`).
+2. **Comportamento dell'Agente per il Marketplace**:
+   - **Richiesta esplicita di consultazione**: quando l'utente chiede *"cosa c'è nel marketplace?"*, *"mostrami gli strumenti disponibili"*, *"cosa posso installare per la scuola/leggi/social?"*, l'agente consulta `knowledge/sources/INDEX.md` (o `marketplace.py`) e presenta una panoramica chiara distinguendo ciò che è già attivo da ciò che è disponibile per l'adozione.
+   - **Suggerimento proattivo contestuale**: quando l'utente affronta un'attività pertinente (es. compiti scolastici, decreti di legge, invio email, pianificazione trasferte), l'agente verifica i `triggers` delle fonti a catalogo e **propone proattivamente lo strumento** senza imporre nulla.
+   - **Attivazione a 1-Click (Thin Overlay)**: se l'utente accetta, l'agente crea la scheda in `personal/<istanza>/reference/sources/<id>.md` (`source_ref: knowledge/sources/<id>.md`, `areas: [...]`) e guida alla configurazione delle eventuali credenziali in `~/.config/pos/<id>.env`.
+3. **Fonti Private dell'Utente (Nessuna Promozione nel Framework)**:
+   - Se una fonte è strettamente personale e privata (es. blog personale come *Uomini Oltre la Violenza*, cartelle Drive riservate, dossier interni), vive **esclusivamente** nell'istanza dell'utente (`reference/sources/`) e **non viene mai aggiunta al marketplace pubblico del framework**.
+4. **Ciclo di Vita & Rilevamento Fonti Orfane (Lifecycle)**:
+   - Se uno strumento a catalogo viene dismesso o deprecato (`status: deprecated`), l'agente smette di proporlo ai nuovi utenti.
+   - Se un file viene rimosso dal framework, `check-updates.sh` rileva la fonte orfana e l'agente propone all'utente di archiviarla in `reference/sources/archive/` o congelarla in locale, garantendo che nessun dato o nota storica personale venga mai perso.
 
 ---
 

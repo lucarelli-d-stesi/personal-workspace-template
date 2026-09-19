@@ -241,6 +241,57 @@ fi
 echo ""
 
 # -------------------------------------------------------------
+# 4. Marketplace & Fonti Esterne
+# -------------------------------------------------------------
+echo -e "${BOLD}4. Marketplace & Fonti Esterne${NC}"
+AVAILABLE_COUNT=0
+UNADOPTED=()
+for src in "$WORKSPACE_DIR/knowledge/sources"/*.md; do
+    [ -f "$src" ] || continue
+    base=$(basename "$src")
+    [ "$base" = "README.md" ] && continue
+    [ "$base" = "INDEX.md" ] && continue
+    AVAILABLE_COUNT=$((AVAILABLE_COUNT + 1))
+    if [ ! -f "$PERSONAL_DIR/reference/sources/$base" ]; then
+        UNADOPTED+=("$base")
+    fi
+done
+
+ADOPTED_COUNT=$((AVAILABLE_COUNT - ${#UNADOPTED[@]}))
+if [ ${#UNADOPTED[@]} -gt 0 ]; then
+    info "Marketplace POS: $AVAILABLE_COUNT strumenti a catalogo ($ADOPTED_COUNT attivi, ${#UNADOPTED[@]} disponibili per l'adozione)."
+    info "Strumenti non ancora adottati: ${UNADOPTED[*]}"
+    info "Puoi esplorare la vetrina con: bash setup/marketplace.sh"
+else
+    ok "Marketplace POS: tutti i $AVAILABLE_COUNT strumenti disponibili a catalogo sono collegati alla tua istanza."
+fi
+
+# Controllo Fonti Orfane (Orphan Detection)
+ORPHANS=()
+if [ -d "$PERSONAL_DIR/reference/sources" ]; then
+    for user_src in "$PERSONAL_DIR/reference/sources"/*.md; do
+        [ -f "$user_src" ] || continue
+        base=$(basename "$user_src")
+        [ "$base" = "README.md" ] && continue
+        ref_line=$(grep -E '^[[:space:]]*source_ref:' "$user_src" | head -n 1 | cut -d: -f2- | tr -d ' "[:space:]' || true)
+        if [ -n "$ref_line" ] && [ ! -f "$WORKSPACE_DIR/$ref_line" ]; then
+            ORPHANS+=("$base ($ref_line)")
+        fi
+    done
+fi
+
+if [ ${#ORPHANS[@]} -gt 0 ]; then
+    warn "Rilevate ${#ORPHANS[@]} fonti orfane (il file sorgente nel framework è stato rimosso o spostato):"
+    for o in "${ORPHANS[@]}"; do
+        echo -e "      ${RED}!${NC} $o"
+    done
+    info "Suggerimento: chiedi all'assistente AI di archiviare la scheda in reference/sources/archive/ o renderla autonoma."
+else
+    ok "Nessuna fonte orfana rilevata nell'istanza personale."
+fi
+echo ""
+
+# -------------------------------------------------------------
 # Riepilogo
 # -------------------------------------------------------------
 echo -e "${BOLD}============================================================${NC}"
