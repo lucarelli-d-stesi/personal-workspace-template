@@ -190,6 +190,13 @@ curl -fsSL https://raw.githubusercontent.com/danielelucarelli1980/personal-works
 
 ---
 
-## 8. License
+## 8. Architectural Roadmap
+
+For upcoming initiatives, design tracks (such as typed epistemic graphs and active *Evo-Memory* consolidation loops), and implementation horizons:
+👉 Consult the **[Architectural Roadmap](ROADMAP.md)**.
+
+---
+
+## 9. License
 
 This project is licensed under the [MIT License](LICENSE) — feel free to adapt, study, and tailor it for your own personal, academic, or professional journey.
