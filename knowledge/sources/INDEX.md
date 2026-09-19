@@ -18,6 +18,7 @@ Questo catalogo raccoglie e indicizza le **fonti esterne**, i **connettori CLI**
 | 🏗️ **[Cetmix Tower](cetmix-tower.md)** | `blueprint` | DevOps, Ingegneria, Odoo | Open Source (Consultazione / Clone) | `ready` | [cetmix-tower.md](cetmix-tower.md) |
 | 📄 **[Docling](docling.md)** | `cli-tool` | Documenti, PDF, OCR, Tabelle | Open Source / Locale (Python / uvx) | `ready` | [docling.md](docling.md) |
 | 🕷️ **[Scrapling](scrapling.md)** | `cli-tool` | Web Scraping, Anti-Bot, Open Data | Open Source / Locale (Python / Stealth) | `ready` | [scrapling.md](scrapling.md) |
+| 🧠 **[Memory Layer](memory-layer.md)** | `cli-tool` | Coding Agents, Continuità, Ingegneria | PostgreSQL + pgvector (Locale / Rust) | `ready` | [memory-layer.md](memory-layer.md) |
 
 ---
 
@@ -81,6 +82,13 @@ Questo catalogo raccoglie e indicizza le **fonti esterne**, i **connettori CLI**
 - **Accesso & Sicurezza**: Eseguito localmente in Python (`pip install scrapling`). Non richiede proxy residenziali a pagamento o servizi terzi di captcha-solving.
 - **Trigger semantici**: estrarre dati da siti protetti da Cloudflare, scraping albi pretori/bandi/notizie, Single Page Application con rendering JS, monitoraggio pagine e tariffe, aggirare errori 403/captcha.
 - **Attivazione**: [Vedi scheda dettagliata](scrapling.md).
+
+### 🧠 Memory Layer (`source-memory-layer`)
+- **Tipo**: `cli-tool` & `method` (Local-first memory engine per coding agents)
+- **Cosa fa**: Sistema di memoria persistente e ad alte prestazioni scritto in Rust per singoli progetti di sviluppo software. Memorizza decisioni, commit, vincoli architetturali e bug passati, supportando Claude Code, Codex e Cursor via MCP, TUI e CLI. Include `memory resume` per il briefing istantaneo di ripresa lavoro, deduplicazione con gate umano e auto-validazione a fronte del codice.
+- **Accesso & Sicurezza**: Eseguito localmente con database PostgreSQL + `pgvector` (tramite container Docker locale o installazione bare-metal). 100% locale, nessuna telemetria forzata, totale sovranità sui dati di progetto.
+- **Trigger semantici**: memoria persistente per coding agents, tracciare decisioni architetturali per Claude Code/Codex, storico decisioni software con evidenza commit, briefing di ripresa (resume) su progetti software in `projects/`.
+- **Attivazione**: [Vedi scheda dettagliata](memory-layer.md).
 
 ---
 

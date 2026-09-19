@@ -79,6 +79,17 @@ sections only when the task touches them.
 One `## YYYY-MM-DD` section per session, with bold sub-entries:
 **Done:**, **Next:**, **Blocked by:**. Never rewrite past sections.
 
+## Resume briefings
+
+When resuming work on an area or backlog item (after an interruption or at session start,
+or when the user asks *"dove eravamo rimasti?"*), the assistant prepares a concise **Resume Briefing**
+before proposing actions:
+1. **Objective & Phase**: The purpose and current operational phase (`context.md` or spec `## Summary`).
+2. **Grounding**: The latest `**Done:**` and `**Next:**` from `areas/<area>/worklog/<item>.md`.
+3. **Open Blockers**: Any active `**Blocked by:**` or pending decisions.
+4. **Immediate Next Action**: A single, crisp proposed action to unpause work.
+See `knowledge/playbooks/resume-briefing.md`.
+
 ## Machine-owned regions (sentinel markers)
 
 Machine-written content inside human-edited files is delimited by HTML
