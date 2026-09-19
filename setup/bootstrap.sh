@@ -17,6 +17,11 @@
 # =============================================================
 set -euo pipefail
 
+# If running via pipe (e.g. curl ... | bash), reconnect stdin to terminal
+if [ ! -t 0 ] && [ -e /dev/tty ]; then
+    exec < /dev/tty
+fi
+
 WORKSPACE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SETUP_DIR="$WORKSPACE_DIR/setup"
 
@@ -67,12 +72,14 @@ run_privileged() {
 }
 
 NON_INTERACTIVE=false
+RECONFIGURE=false
 for arg in "$@"; do
     case "$arg" in
         --check|-c)
             exec bash "$SETUP_DIR/status.sh"
             ;;
         --yes|-y) NON_INTERACTIVE=true ;;
+        --reconfigure) RECONFIGURE=true ;;
     esac
 done
 
@@ -199,50 +206,139 @@ info "Configurazione repository personale privato..."
 CONFIG_FILE="$WORKSPACE_DIR/.pos-config"
 PERSONAL_DIR=""
 CURRENT_INSTANCE=""
+FRESH_INSTANCE=false
 
 if [ -f "$CONFIG_FILE" ]; then
     CURRENT_INSTANCE=$(grep -E '^instance_dir=' "$CONFIG_FILE" | head -1 | cut -d= -f2 || true)
 fi
 
-if [ -n "$CURRENT_INSTANCE" ] && [ -d "$WORKSPACE_DIR/$CURRENT_INSTANCE" ]; then
+if [ -n "$CURRENT_INSTANCE" ] && [ -d "$WORKSPACE_DIR/$CURRENT_INSTANCE" ] && [ "$RECONFIGURE" = false ]; then
     PERSONAL_DIR="$WORKSPACE_DIR/$CURRENT_INSTANCE"
     ok "Istanza personale già configurata in $CURRENT_INSTANCE"
 else
+    FRESH_INSTANCE=true
     echo "  Il framework è condiviso e generico. Le tue attività, valori personali,"
     echo "  fonti, appunti e note private risiedono in un tuo repository privato separato."
-    echo "  TIP: Puoi creare il tuo repo privato partendo dal template standalone:"
-    echo "       https://github.com/danielelucarelli1980/pos-instance-template"
     echo ""
     
-    INSTANCE_INPUT=""
+    # 1. Ask for User Name
+    DEFAULT_USER_NAME="$(git config --get user.name 2>/dev/null || id -un 2>/dev/null || echo "User")"
     if [ "$NON_INTERACTIVE" = false ]; then
-        read -rp "  Nome della cartella istanza (es. my-life-pos): " INSTANCE_INPUT
+        read -rp "  Come ti chiami? (Nome per l'istanza, default: $DEFAULT_USER_NAME): " USER_NAME_INPUT
+        USER_NAME="${USER_NAME_INPUT:-$DEFAULT_USER_NAME}"
+    else
+        USER_NAME="$DEFAULT_USER_NAME"
     fi
-    INSTANCE_INPUT="${INSTANCE_INPUT:-my-pos}"
+
+    # Derive slug
+    USER_SLUG=$(printf '%s' "$USER_NAME" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '-' | sed 's/-\{2,\}/-/g; s/^-//; s/-$//')
+    [ -z "$USER_SLUG" ] && USER_SLUG="my"
+    DEFAULT_INSTANCE="${USER_SLUG}-pos"
+
+    if [ "$NON_INTERACTIVE" = false ]; then
+        read -rp "  Nome della cartella dell'istanza [personal/$DEFAULT_INSTANCE]: " INSTANCE_INPUT
+        INSTANCE_INPUT="${INSTANCE_INPUT:-$DEFAULT_INSTANCE}"
+    else
+        INSTANCE_INPUT="$DEFAULT_INSTANCE"
+    fi
     TARGET_DIR="$WORKSPACE_DIR/personal/$INSTANCE_INPUT"
+    mkdir -p "$WORKSPACE_DIR/personal"
     
     if [ -d "$TARGET_DIR/.git" ]; then
         ok "Repository già presente in personal/$INSTANCE_INPUT"
     else
-        REPO_URL=""
-        if [ "$NON_INTERACTIVE" = false ]; then
-            read -rp "  URL/Nome repo GitHub privato (es. git@github.com:user/$INSTANCE_INPUT.git, oppure lascia vuoto per creare locale): " REPO_URL
-        fi
-        
-        if [ -n "$REPO_URL" ]; then
-            info "Clonazione repository $REPO_URL in personal/$INSTANCE_INPUT..."
-            mkdir -p "$WORKSPACE_DIR/personal"
-            if git clone "$REPO_URL" "$TARGET_DIR"; then
-                ok "Repository clonato con successo"
-            else
-                warn "Clone fallito. Inizializzo repository locale in personal/$INSTANCE_INPUT..."
-                mkdir -p "$TARGET_DIR"
-                (cd "$TARGET_DIR" && git init)
+        GH_AVAILABLE=false
+        if command -v gh &>/dev/null; then
+            if gh auth status &>/dev/null 2>&1; then
+                GH_AVAILABLE=true
             fi
+        fi
+
+        SETUP_CHOICE=""
+        if [ "$NON_INTERACTIVE" = true ]; then
+            SETUP_CHOICE="3"
         else
+            echo ""
+            echo "  Scegli come configurare il tuo repository personale:"
+            if [ "$GH_AVAILABLE" = true ]; then
+                echo "    1) [GitHub CLI] Crea automaticamente un nuovo repo privato su GitHub dal template"
+                echo "    2) [Git Clone]  Clona un repository già esistente da GitHub (HTTPS o SSH)"
+                echo "    3) [Locale]     Crea un repository privato solo in locale sul tuo computer"
+                read -rp "  Scelta [1]: " SETUP_CHOICE
+                SETUP_CHOICE="${SETUP_CHOICE:-1}"
+            elif command -v gh &>/dev/null; then
+                echo "    1) [GitHub CLI] Accedi a GitHub (gh auth login) e crea il repo dal template"
+                echo "    2) [Git Clone]  Clona un repository già esistente da GitHub (HTTPS o SSH)"
+                echo "    3) [Locale]     Crea un repository privato solo in locale sul tuo computer"
+                read -rp "  Scelta [3]: " SETUP_CHOICE
+                SETUP_CHOICE="${SETUP_CHOICE:-3}"
+            else
+                echo "    1) [Git Clone]  Clona un repository già esistente da GitHub (HTTPS o SSH)"
+                echo "    2) [Locale]     Crea un repository privato solo in locale sul tuo computer"
+                echo "       (Nota: per creare automaticamente su GitHub, installa GitHub CLI 'gh')"
+                read -rp "  Scelta [2]: " SETUP_CHOICE
+                if [ "$SETUP_CHOICE" = "1" ]; then
+                    SETUP_CHOICE="2"
+                else
+                    SETUP_CHOICE="3"
+                fi
+            fi
+        fi
+
+        if [ "$SETUP_CHOICE" = "1" ]; then
+            if ! gh auth status &>/dev/null 2>&1; then
+                info "Avvio autenticazione con GitHub CLI..."
+                gh auth login || {
+                    warn "Autenticazione GitHub CLI fallita o annullata."
+                }
+            fi
+            
+            if gh auth status &>/dev/null 2>&1; then
+                GH_REPO_NAME="$INSTANCE_INPUT"
+                if [ "$NON_INTERACTIVE" = false ]; then
+                    read -rp "  Nome del repo GitHub da creare [default: $GH_REPO_NAME]: " GH_REPO_INPUT
+                    GH_REPO_NAME="${GH_REPO_INPUT:-$GH_REPO_NAME}"
+                fi
+                info "Creazione repository privato '$GH_REPO_NAME' su GitHub dal template..."
+                if (cd "$WORKSPACE_DIR/personal" && gh repo create "$GH_REPO_NAME" --template danielelucarelli1980/pos-instance-template --private --clone); then
+                    ok "Repository GitHub privato '$GH_REPO_NAME' creato e clonato con successo"
+                    if [ "$GH_REPO_NAME" != "$INSTANCE_INPUT" ]; then
+                        INSTANCE_INPUT="$GH_REPO_NAME"
+                        TARGET_DIR="$WORKSPACE_DIR/personal/$INSTANCE_INPUT"
+                    fi
+                else
+                    warn "Creazione via GitHub CLI non riuscita. Inizializzo repository locale..."
+                    SETUP_CHOICE="3"
+                fi
+            else
+                warn "Procedo con creazione repository locale."
+                SETUP_CHOICE="3"
+            fi
+        fi
+
+        if [ "$SETUP_CHOICE" = "2" ]; then
+            REPO_URL=""
+            if [ "$NON_INTERACTIVE" = false ]; then
+                echo "  Se hai già creato il repository su GitHub (es. premendo 'Use this template'):"
+                read -rp "  Inserisci l'URL del repo (es. https://github.com/username/$INSTANCE_INPUT.git): " REPO_URL
+            fi
+            if [ -n "$REPO_URL" ]; then
+                info "Clonazione repository $REPO_URL in personal/$INSTANCE_INPUT..."
+                if git clone "$REPO_URL" "$TARGET_DIR"; then
+                    ok "Repository clonato con successo"
+                else
+                    warn "Clone fallito. Inizializzo repository locale in personal/$INSTANCE_INPUT..."
+                    SETUP_CHOICE="3"
+                fi
+            else
+                SETUP_CHOICE="3"
+            fi
+        fi
+
+        if [ "$SETUP_CHOICE" = "3" ]; then
             info "Inizializzazione repository privato locale in personal/$INSTANCE_INPUT..."
             mkdir -p "$TARGET_DIR"
-            (cd "$TARGET_DIR" && git init)
+            (cd "$TARGET_DIR" && git init -b main 2>/dev/null || (cd "$TARGET_DIR" && git init))
             ok "Repository locale inizializzato in personal/$INSTANCE_INPUT"
         fi
     fi
@@ -276,6 +372,7 @@ mkdir -p "$PERSONAL_DIR/inbox"
 mkdir -p "$PERSONAL_DIR/journal"
 mkdir -p "$PERSONAL_DIR/skills"
 mkdir -p "$PERSONAL_DIR/projects"
+mkdir -p "$PERSONAL_DIR/machines"
 
 # Seed profile templates if missing
 for tpl in "$SETUP_DIR/templates/profile"/*-TEMPLATE.md; do
@@ -288,16 +385,31 @@ for tpl in "$SETUP_DIR/templates/profile"/*-TEMPLATE.md; do
     fi
 done
 
-# Seed personal CLAUDE.md / AGENTS.md if missing
+# Ensure USER_NAME is populated
+if [ -z "${USER_NAME:-}" ]; then
+    USER_NAME="$(git config --get user.name 2>/dev/null || id -un 2>/dev/null || echo "User")"
+fi
+
+# Seed personal CLAUDE.md / AGENTS.md / GEMINI.md if missing
 if [ ! -f "$PERSONAL_DIR/CLAUDE.md" ]; then
-    USER_NAME="$(git config --get user.name || id -un)"
-    sed -e "s/{{NAME}}/$USER_NAME/g" -e "s/{{LANGUAGE}}/Italiano/g" \
-        "$SETUP_DIR/templates/CLAUDE.template.md" > "$PERSONAL_DIR/CLAUDE.md"
+    if [ -f "$SETUP_DIR/templates/personal-instance-TEMPLATE/CLAUDE.md" ]; then
+        cp "$SETUP_DIR/templates/personal-instance-TEMPLATE/CLAUDE.md" "$PERSONAL_DIR/CLAUDE.md"
+    elif [ -f "$SETUP_DIR/templates/CLAUDE.template.md" ]; then
+        cp "$SETUP_DIR/templates/CLAUDE.template.md" "$PERSONAL_DIR/CLAUDE.md"
+    fi
     ok "Creato $PERSONAL_DIR/CLAUDE.md"
+fi
+
+# Personalize CLAUDE.md placeholders if present
+if [ -f "$PERSONAL_DIR/CLAUDE.md" ]; then
+    if grep -q '{{NAME}}' "$PERSONAL_DIR/CLAUDE.md" 2>/dev/null || grep -q '{{LANGUAGE}}' "$PERSONAL_DIR/CLAUDE.md" 2>/dev/null; then
+        sed -e "s/{{NAME}}/$USER_NAME/g" -e "s/{{LANGUAGE}}/Italiano/g" "$PERSONAL_DIR/CLAUDE.md" > "$PERSONAL_DIR/CLAUDE.md.tmp" && mv "$PERSONAL_DIR/CLAUDE.md.tmp" "$PERSONAL_DIR/CLAUDE.md"
+        ok "Personalizzato CLAUDE.md per $USER_NAME"
+    fi
 fi
 (cd "$PERSONAL_DIR" && ln -sf CLAUDE.md AGENTS.md && ln -sf CLAUDE.md GEMINI.md)
 
-# Pre-push hook for secret protection if git repo
+# Pre-push hook and remote configuration if git repo
 if [ -d "$PERSONAL_DIR/.git" ]; then
     # Configure template remote for future updates if not present
     if ! git -C "$PERSONAL_DIR" remote get-url template &>/dev/null; then
@@ -322,6 +434,15 @@ exit 0
 HOOK_EOF
         chmod +x "$HOOK_FILE"
         ok "Hook pre-push di scansione segreti (gitleaks) installato nell'istanza"
+    fi
+    
+    # If this was a fresh instance creation, record initial setup commit if needed
+    if [ "$FRESH_INSTANCE" = true ]; then
+        if [ -n "$(git -C "$PERSONAL_DIR" status --porcelain 2>/dev/null)" ]; then
+            git -C "$PERSONAL_DIR" add -A 2>/dev/null || true
+            git -C "$PERSONAL_DIR" commit -m "chore: initial personal instance setup for $USER_NAME" 2>/dev/null || true
+            ok "Commit iniziale registrato nel repository privato"
+        fi
     fi
 fi
 
@@ -442,6 +563,26 @@ EOF
     ok "Profilo macchina machines/${MACHINE_ID}.md generato con successo"
 else
     ok "Profilo macchina machines/${MACHINE_ID}.md già presente"
+fi
+
+# Tracking last session
+LAST_SESSION_FILE="$PERSONAL_DIR/machines/last-session.md"
+if [ ! -f "$LAST_SESSION_FILE" ]; then
+    cat << EOF > "$LAST_SESSION_FILE"
+---
+machine_id: $MACHINE_ID
+hostname: $(hostname 2>/dev/null || echo unknown)
+scenario: $SCENARIO
+last_session: $(date -u '+%Y-%m-%dT%H:%M:%SZ')
+---
+
+# Ultima Sessione Attiva
+
+- **Macchina**: \`$MACHINE_ID\`
+- **Scenario**: $SCENARIO
+- **Data e ora UTC**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+EOF
+    ok "Inizializzato machines/last-session.md"
 fi
 
 # -------------------------------------------------------------

@@ -36,11 +36,11 @@ If MCP is unavailable, use the REST API directly:
 ```bash
 # Get connected platforms
 curl -X GET "https://api.publora.com/api/v1/platform-connections" \
-  -H "x-publora-key: sk_your_api_key"
+  -H "x-publora-key: YOUR_PUBLORA_API_KEY"
 
 # Create a post
 curl -X POST "https://api.publora.com/api/v1/create-post" \
-  -H "x-publora-key: sk_your_api_key" \
+  -H "x-publora-key: YOUR_PUBLORA_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "platforms": ["threads-12345"],

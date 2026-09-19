@@ -36,11 +36,11 @@ If the MCP server is unavailable or returns errors, use the REST API directly:
 ```bash
 # Get your connected platforms
 curl -X GET "https://api.publora.com/api/v1/platform-connections" \
-  -H "x-publora-key: sk_your_api_key"
+  -H "x-publora-key: YOUR_PUBLORA_API_KEY"
 
 # Get post statistics
 curl -X POST "https://api.publora.com/api/v1/linkedin-post-statistics" \
-  -H "x-publora-key: sk_your_api_key" \
+  -H "x-publora-key: YOUR_PUBLORA_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "platformId": "linkedin-abc123",
@@ -50,7 +50,7 @@ curl -X POST "https://api.publora.com/api/v1/linkedin-post-statistics" \
 
 # Get account statistics
 curl -X POST "https://api.publora.com/api/v1/linkedin-account-statistics" \
-  -H "x-publora-key: sk_your_api_key" \
+  -H "x-publora-key: YOUR_PUBLORA_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "platformId": "linkedin-abc123",
@@ -95,7 +95,7 @@ Combined profile overview: followers plus statistics.
 
 ```bash
 curl -X POST "https://api.publora.com/api/v1/linkedin-post-statistics" \
-  -H "x-publora-key: sk_your_api_key" \
+  -H "x-publora-key: YOUR_PUBLORA_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"platformId": "linkedin-abc123", "postedId": "urn:li:share:7123456789012345678", "queryTypes": "ALL"}'
 ```
