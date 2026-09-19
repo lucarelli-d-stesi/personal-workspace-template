@@ -16,6 +16,8 @@ Questo catalogo raccoglie e indicizza le **fonti esterne**, i **connettori CLI**
 | 🗺️ **[Google Maps MCP](google-maps-mcp.md)** | `mcp-server` | Mobilità, Territorio, Meteo | Server MCP locale (Google Maps API Key) | `ready` | [google-maps-mcp.md](google-maps-mcp.md) |
 | 📢 **[Publora Social Suite](publora.md)** | `skill-mcp` | Comunicazione & Social Media | Server MCP / REST (API Key Publora) | `ready` | [publora.md](publora.md) |
 | 🏗️ **[Cetmix Tower](cetmix-tower.md)** | `blueprint` | DevOps, Ingegneria, Odoo | Open Source (Consultazione / Clone) | `ready` | [cetmix-tower.md](cetmix-tower.md) |
+| 📄 **[Docling](docling.md)** | `cli-tool` | Documenti, PDF, OCR, Tabelle | Open Source / Locale (Python / uvx) | `ready` | [docling.md](docling.md) |
+| 🕷️ **[Scrapling](scrapling.md)** | `cli-tool` | Web Scraping, Anti-Bot, Open Data | Open Source / Locale (Python / Stealth) | `ready` | [scrapling.md](scrapling.md) |
 
 ---
 
@@ -65,6 +67,20 @@ Questo catalogo raccoglie e indicizza le **fonti esterne**, i **connettori CLI**
 - **Accesso**: Consultazione remota o clone locale nella cartella funzionale `projects/<nome>/`.
 - **Trigger semantici**: odoo deployment, docker compose odoo, traefik reverse proxy, devops, configurazione server staging/produzione.
 - **Attivazione**: [Vedi scheda dettagliata](cetmix-tower.md).
+
+### 📄 Docling Document Parser (`source-docling`)
+- **Tipo**: `cli-tool` & `method` (IBM Research Document Parser)
+- **Cosa fa**: Converte documenti ricchi e complessi (**PDF**, **DOCX**, **PPTX**, **XLSX**, scansioni cartacee) in Markdown o JSON preservando la struttura logica, l'ordine di lettura multi-colonna e il codice/formule LaTeX. Include motore OCR locale e ricostruzione avanzata di tabelle complesse con celle unite.
+- **Accesso & Sicurezza**: Eseguito localmente via CLI Python (`pip install docling` o `uvx docling`). 100% offline, nessun documento inviato a servizi cloud.
+- **Trigger semantici**: convertire PDF complessi, estrarre tabelle da PDF/bilanci/bandi, OCR scansioni cartacee, convertire Word/PowerPoint in Markdown, preparazione dati RAG per LLM.
+- **Attivazione**: [Vedi scheda dettagliata](docling.md).
+
+### 🕷️ Scrapling Web Scraper & Crawler (`source-scrapling`)
+- **Tipo**: `cli-tool` & `method` (Adaptive Stealth Web Scraper)
+- **Cosa fa**: Framework di web scraping ad altissime prestazioni specificamente progettato per estrarre dati puliti per LLM superando filtri anti-bot moderni (**Cloudflare Turnstile**, DataDome, Akamai) con overhead minimo. Dispone di tre motori di fetch (`Fetcher`, `StealthyFetcher`, `DynamicFetcher`) e selettori adattivi che resistono alle modifiche del layout HTML.
+- **Accesso & Sicurezza**: Eseguito localmente in Python (`pip install scrapling`). Non richiede proxy residenziali a pagamento o servizi terzi di captcha-solving.
+- **Trigger semantici**: estrarre dati da siti protetti da Cloudflare, scraping albi pretori/bandi/notizie, Single Page Application con rendering JS, monitoraggio pagine e tariffe, aggirare errori 403/captcha.
+- **Attivazione**: [Vedi scheda dettagliata](scrapling.md).
 
 ---
 
