@@ -24,7 +24,13 @@ the spec's `## Summary` and the last 1–2 worklog sections of the item at
 hand. Backlog items live in `backlog/items/` with stable ids — never reuse
 or rename an id.
 
+## Multi-Machine & Sources
+
+- Machine context: consult `machines/<current-machine-id>.md`. If `machines/last-session.md` differs from the current host, run diagnostic audit (`setup/status.sh`) and update `last-session.md`.
+- External sources: use Thin Overlays in `reference/sources/<id>.md` (`source_ref: knowledge/sources/<id>.md`) without duplicating technical URLs.
+- External integrations: link Drive folders, Calendar events, and mail threads in `context.md` and backlog items where applicable.
+
 ## End of session
 
-Run `knowledge/playbooks/harvesting.md`. Propose commits of this instance
-repo; I confirm. Never push anywhere without my explicit ok.
+Run `knowledge/playbooks/harvesting.md`. Harvest reusable lessons into `knowledge/` or personal `skills/`, and update climate observations in `journal/` or area context. Propose commits of this instance repo; I confirm. Never push anywhere without my explicit ok.
+

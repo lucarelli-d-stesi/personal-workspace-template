@@ -143,10 +143,27 @@ else
         else
             warn "Hook pre-push non configurato in $PERSONAL_DIR/.git/hooks/pre-push"
         fi
+
+        # Check pending updates / migrations
+        APPLIED_FILE="$PERSONAL_DIR/.pos-updates-applied"
+        PENDING_MIGRATIONS=0
+        if [ -d "$WORKSPACE_DIR/setup/updates" ]; then
+            for s in "$WORKSPACE_DIR/setup/updates"/????-*.sh; do
+                [ -e "$s" ] || continue
+                sname=$(basename "$s")
+                if [ ! -f "$APPLIED_FILE" ] || ! grep -qxF "$sname" "$APPLIED_FILE" 2>/dev/null; then
+                    PENDING_MIGRATIONS=$((PENDING_MIGRATIONS + 1))
+                fi
+            done
+        fi
+        if [ "$PENDING_MIGRATIONS" -gt 0 ]; then
+            warn "Migrazioni pendenti: $PENDING_MIGRATIONS (esegui: bash setup/check-updates.sh)"
+        fi
     else
         err "Istanza $INSTANCE_SLUG non trovata o non è un repo git in $PERSONAL_DIR"
     fi
 fi
+
 echo ""
 
 # -------------------------------------------------------------

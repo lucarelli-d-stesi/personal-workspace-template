@@ -298,9 +298,19 @@ fi
 (cd "$PERSONAL_DIR" && ln -sf CLAUDE.md AGENTS.md && ln -sf CLAUDE.md GEMINI.md)
 
 # Pre-push hook for secret protection if git repo
-if [ -d "$PERSONAL_DIR/.git" ] && command -v gitleaks &>/dev/null; then
-    HOOK_FILE="$PERSONAL_DIR/.git/hooks/pre-push"
-    cat << 'HOOK_EOF' > "$HOOK_FILE"
+if [ -d "$PERSONAL_DIR/.git" ]; then
+    # Configure template remote for future updates if not present
+    if ! git -C "$PERSONAL_DIR" remote get-url template &>/dev/null; then
+        git -C "$PERSONAL_DIR" remote add template "https://github.com/danielelucarelli1980/pos-instance-template.git" 2>/dev/null || true
+        ok "Configurato remote 'template' per aggiornamenti di sistema"
+    fi
+
+    # Ensure .pos-updates-applied exists
+    touch "$PERSONAL_DIR/.pos-updates-applied"
+
+    if command -v gitleaks &>/dev/null; then
+        HOOK_FILE="$PERSONAL_DIR/.git/hooks/pre-push"
+        cat << 'HOOK_EOF' > "$HOOK_FILE"
 #!/bin/bash
 if command -v gitleaks >/dev/null 2>&1; then
     gitleaks protect --staged --verbose || {
@@ -310,9 +320,11 @@ if command -v gitleaks >/dev/null 2>&1; then
 fi
 exit 0
 HOOK_EOF
-    chmod +x "$HOOK_FILE"
-    ok "Hook pre-push di scansione segreti (gitleaks) installato nell'istanza"
+        chmod +x "$HOOK_FILE"
+        ok "Hook pre-push di scansione segreti (gitleaks) installato nell'istanza"
+    fi
 fi
+
 
 # -------------------------------------------------------------
 # 5b. Per-Machine Profile Setup (machines/<id>.md)
@@ -600,6 +612,8 @@ echo "  Puoi verificare in ogni momento lo stato del deploy e della macchina con
 echo "    bash setup/bootstrap.sh --check"
 echo "    # oppure"
 echo "    bash setup/status.sh"
+echo "    # oppure verificare aggiornamenti disponibili nel framework/template:"
+echo "    bash setup/check-updates.sh"
 echo ""
 echo "  NOTA SUL DISCOVERY (Nessuna intervista iniziale):"
 echo "  Non è prevista alcuna intervista a freddo. Il discovery avviene in"

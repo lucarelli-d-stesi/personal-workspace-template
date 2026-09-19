@@ -128,4 +128,25 @@ Il POS distingue chiaramente tra fonti esterne di riferimento raccomandate a liv
    - **Indicizzazione Semantica Locale (`zg`)**: La scheda descrittiva è indicizzata dal motore semantico (`zg`), permettendo all'agente di richiamarla istantaneamente durante kickoff semantici o dynamic pivot.
    - **Distillazione**: L'esperienza e le sintesi derivate dalla consultazione della fonte confluiscono nelle note personali di `knowledge/`.
 
+---
+
+## 7. Aggiornamenti del Framework e del Template (Zero-Knowledge Sync)
+
+Il framework (`personal-workspace`) e il template di istanza (`pos-instance-template`) si evolvono nel tempo (nuove convenzioni, estensioni di configurazione, nuove fonti o script di manutenzione). Poiché i dati personali risiedono in repository privati distinti, gli aggiornamenti avvengono secondo un modello a **conoscenza zero (zero-knowledge)** mediato dall'agente locale:
+
+1. **Trigger da parte dell'utente**:
+   - Quando l'utente chiede *"ci sono novità nel workspace?"*, *"verifica aggiornamenti"*, *"aggiorna il template"* o simili, l'agente esegue lo strumento di diagnostica:
+     ```bash
+     bash setup/check-updates.sh
+     ```
+2. **Analisi e Proposta trasparente**:
+   - L'agente analizza l'output di `check-updates.sh`:
+     - **Aggiornamenti Framework**: se il repository del framework è indietro rispetto a `origin/main`, spiega i commit in arrivo e propone l'aggiornamento.
+     - **Migrazioni di struttura (`setup/updates/`)**: legge gli script `NNNN-*.sh` pendenti, ne riassume l'effetto in linguaggio naturale, esegue un controllo di sicurezza (assenza di operazioni distruttive) e chiede conferma per l'applicazione (`bash setup/check-updates.sh --apply-migrations`).
+     - **Allineamento Configurazione & Template**: se emergono nuove regole `.gitignore`, directory mancanti o nuove guide, ne propone la sincronizzazione non distruttiva (`bash setup/check-updates.sh --sync`).
+     - **Nuovi campi di metadati**: se sono stati introdotti nuovi campi nei template (es. `## Current phase and climate` in `context.md`), l'agente propone all'utente di integrarli nei file delle proprie aree, guidando la compilazione.
+3. **Inviolabilità dei dati personali**:
+   - Non vengono mai sovrascritti né eliminati file utente in `profile/`, `areas/`, `backlog/`, `journal/` o `knowledge/`.
+   - Nessun dato personale viene mai trasmesso all'esterno o verso il repository del framework.
+
 
