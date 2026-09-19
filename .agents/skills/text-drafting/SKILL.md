@@ -37,3 +37,10 @@ Esegui la revisione su 3 livelli distinti:
 1. **Livello Strutturale**: La tesi è chiara? I passaggi logici si susseguono senza salti o contraddizioni? Le conclusioni rispondono all'introduzione?
 2. **Livello Paragrafo/Frase**: Frasi troppo lunghe o contorte? Ci sono ripetizioni lessicali ravvicinate? Il ritmo della lettura è fluido?
 3. **Livello Meccanico/Formale**: Ortografia, punteggiatura (attenzione a virgole tra soggetto e verbo), concordanze verbali, formattazione di citazioni e bibliografia.
+
+### 5. De-AIzzazione e Rifiuto dei Cliché (Anti-Patterns Retorici)
+In ogni testo generato o revisionato dall'agente, applica sistematicamente questi vincoli negativi:
+- **No alla formula binaria automatica**: bandisci espressioni stereotipate come *"Non è [X], ma [Y]"*, *"Non si tratta di [A], bensì di [B]"*.
+- **No al vocabolario plastificato**: elimina aggettivi e sostantivi generici riempitivi (*silenzioso, cruciale, fondamentale, imprescindibile, tangibile, un faro, il tessuto connettivo, navigare la complessità, il viaggio verso*).
+- **No all'abuso di elenchi puntati**: non frammentare la prosa riflessiva, polemica o saggistica in bullet point artificiali; lascia che il pensiero si sviluppi in periodi continui e coesi.
+- **No alla chiusura consolatoria**: evita finali pedagogici, morali edificanti o finti inviti all'interazione (*«E voi cosa ne pensate?»*); il finale deve restare fedele all'attrito e alla verità del testo.

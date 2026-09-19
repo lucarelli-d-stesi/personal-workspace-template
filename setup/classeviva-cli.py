@@ -210,6 +210,15 @@ class ClasseVivaClient:
         res = self._request("GET", f"/v1/students/{num_id}/lessons/{day}", token=token)
         return res.get("lessons", [])
 
+    def get_homeworks(self, student: Dict[str, Any]) -> List[Dict[str, Any]]:
+        num_id = student["num_id"]
+        token = student["token"]
+        try:
+            res = self._request("GET", f"/v1/students/{num_id}/homeworks", token=token)
+            return res.get("items", [])
+        except Exception:
+            return []
+
     def get_grades(self, student: Dict[str, Any]) -> List[Dict[str, Any]]:
         num_id = student["num_id"]
         token = student["token"]
@@ -260,6 +269,19 @@ def print_compiti(client: ClasseVivaClient, students: List[Dict[str, Any]], days
         s_name = st["name"]
         agenda = client.get_agenda(st, s_date, e_date)
         agenda.sort(key=lambda x: x.get("evtDatetimeBegin", ""))
+
+        hw_map = {}
+        try:
+            for hw in client.get_homeworks(st):
+                hw_map[hw.get("evtId")] = hw
+        except Exception:
+            pass
+
+        for it in agenda:
+            hw_id = it.get("homeworkId")
+            if hw_id and hw_id in hw_map:
+                it["didacticsDesc"] = hw_map[hw_id].get("homeworkDesc", "")
+
         all_results[s_name] = agenda
 
     if as_json:
@@ -279,10 +301,13 @@ def print_compiti(client: ClasseVivaClient, students: List[Dict[str, Any]], days
             subj = it.get("subjectDesc") or "Scuola"
             teacher = it.get("authorName") or ""
             notes = (it.get("notes") or "").strip()
+            did_desc = it.get("didacticsDesc")
             teacher_str = f" (Prof. {teacher})" if teacher else ""
             print(f"  [{dt}] {subj}{teacher_str}")
             if notes:
                 print(f"    📝 {notes}")
+            if did_desc:
+                print(f"    📖 Dettaglio Didattica: {did_desc}")
     print("")
 
 
