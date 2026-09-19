@@ -35,9 +35,25 @@ than ~90 days (or empty). For each, ask openly: is this still true? Does
 
 Also review `observations.md`: recurring observations with accumulating
 evidence may be *proposed* for promotion to a declared entry — the user
-decides.
+decides. Stale observations without recent evidence are whittled to archive
+via `knowledge-gc.md`.
 
-## 4. Backlog hygiene and planning
+## 4. Reality check & dialectic (anti-sycophancy)
+
+Examine recent updates across `STATUS.md`, `context.md`, and recently completed backlog items.
+LLMs naturally suffer from *validation gravity* (shared enthusiasm and mutual escalation with the user).
+Apply an adversarial reality check to safeguard truth over optimism (*Kernel Principle 1: Facts beat opinions*):
+
+- **Milestone & Done verification**: Is an item marked `done` supported by tangible, verified evidence
+  (code executed and tested, document reviewed, output confirmed)? If it was only partially implemented
+  or remains an untested prototype, keep it accurately labeled as `in-progress` or `testing`.
+- **Mythology & claim deflation**: Check whether recent narrative entries in `context.md` or worklogs
+  inflated an experimental script or preliminary idea into a "breakthrough" or "complete architecture".
+  Deflate claims to their strict factual baseline.
+- **Advocate vs. Challenger lens**: For high-stakes decisions or major architectural choices made during
+  the week, articulate the skeptic's counter-argument before ratifying them.
+
+## 5. Backlog hygiene and planning
 
 - Flag stale items (no worklog activity in N weeks): still relevant?
   Reschedule, downgrade or close (`dropped` is a legitimate state).
