@@ -54,24 +54,22 @@ echo "  Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "  Framework: $WORKSPACE_DIR"
 
 # 1. Trova l'istanza personale
-INSTANCE_NAME=""
+PERSONAL_DIR="$WORKSPACE_DIR"
+INSTANCE_SLUG="personal-workspace"
+
 if [ -f "$CONFIG_FILE" ]; then
     INSTANCE_NAME=$(grep -E '^[[:space:]]*instance_dir=' "$CONFIG_FILE" | cut -d= -f2- | tr -d ' "[:space:]' || true)
+    if [ -n "$INSTANCE_NAME" ]; then
+        if [[ "$INSTANCE_NAME" == personal/* ]]; then
+            PERSONAL_DIR="$WORKSPACE_DIR/$INSTANCE_NAME"
+            INSTANCE_SLUG=$(basename "$INSTANCE_NAME")
+        else
+            PERSONAL_DIR="$WORKSPACE_DIR/personal/$INSTANCE_NAME"
+            INSTANCE_SLUG="$INSTANCE_NAME"
+        fi
+    fi
 fi
-
-if [ -z "$INSTANCE_NAME" ]; then
-    err "File .pos-config non trovato o non configurato."
-    exit 1
-fi
-
-if [[ "$INSTANCE_NAME" == personal/* ]]; then
-    PERSONAL_DIR="$WORKSPACE_DIR/$INSTANCE_NAME"
-    INSTANCE_SLUG=$(basename "$INSTANCE_NAME")
-else
-    PERSONAL_DIR="$WORKSPACE_DIR/personal/$INSTANCE_NAME"
-    INSTANCE_SLUG="$INSTANCE_NAME"
-fi
-echo "  Istanza:   $INSTANCE_SLUG ($PERSONAL_DIR)"
+echo "  Spazio attivo: $INSTANCE_SLUG ($PERSONAL_DIR)"
 echo ""
 
 # -------------------------------------------------------------
@@ -230,11 +228,12 @@ if [ -d "$PERSONAL_DIR/.git" ]; then
         git -C "$PERSONAL_DIR" fetch template --quiet 2>/dev/null || warn "Impossibile contattare il remote 'template' (offline?)"
     else
         if [ "$SYNC_ALL" = true ]; then
-            git -C "$PERSONAL_DIR" remote add template "https://github.com/danielelucarelli1980/pos-instance-template.git" 2>/dev/null || true
-            ok "Configurato remote 'template' in $PERSONAL_DIR"
+            git -C "$PERSONAL_DIR" remote add template "https://github.com/danielelucarelli1980/personal-workspace.git" 2>/dev/null || true
+            git -C "$PERSONAL_DIR" remote set-url --push template "NO_PUSH_UPSTREAM_TEMPLATE" 2>/dev/null || true
+            ok "Configurato remote 'template' in $PERSONAL_DIR (push disarmato)"
         else
-            warn "Remote 'template' non configurato nell'istanza."
-            info "Puoi aggiungerlo con: git -C $PERSONAL_DIR remote add template https://github.com/danielelucarelli1980/pos-instance-template.git"
+            warn "Remote 'template' non configurato nel workspace."
+            info "Puoi aggiungerlo con: git -C $PERSONAL_DIR remote add template https://github.com/danielelucarelli1980/personal-workspace.git"
         fi
     fi
 fi

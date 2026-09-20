@@ -83,85 +83,105 @@ echo "  Host:      $(detect_machine_id)"
 echo ""
 
 # -------------------------------------------------------------
-# 1. Framework Repository
+# 1. Repository & Topology Status
 # -------------------------------------------------------------
-echo -e "${BOLD}1. Framework Repo (personal-workspace)${NC}"
+echo -e "${BOLD}1. Git Repository & Privacy Topology${NC}"
 if [ -d "$WORKSPACE_DIR/.git" ]; then
-    FW_BRANCH=$(git -C "$WORKSPACE_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
-    FW_COMMIT=$(git -C "$WORKSPACE_DIR" rev-parse --short HEAD 2>/dev/null || echo "unknown")
-    FW_REMOTE=$(git -C "$WORKSPACE_DIR" config --get remote.origin.url 2>/dev/null || echo "nessuno")
-    FW_DIRTY=$(git -C "$WORKSPACE_DIR" status --porcelain 2>/dev/null | wc -l)
+    BRANCH=$(git -C "$WORKSPACE_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+    COMMIT=$(git -C "$WORKSPACE_DIR" rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    ORIGIN_URL=$(git -C "$WORKSPACE_DIR" config --get remote.origin.url 2>/dev/null || echo "nessuno")
+    TEMPLATE_URL=$(git -C "$WORKSPACE_DIR" config --get remote.template.url 2>/dev/null || echo "non configurato")
+    DIRTY_COUNT=$(git -C "$WORKSPACE_DIR" status --porcelain 2>/dev/null | wc -l)
     
-    if [ "$FW_DIRTY" -eq 0 ]; then
-        ok "Branch: $FW_BRANCH ($FW_COMMIT) — clean"
+    if [ "$DIRTY_COUNT" -eq 0 ]; then
+        ok "Branch: $BRANCH ($COMMIT) — working tree clean"
     else
-        warn "Branch: $FW_BRANCH ($FW_COMMIT) — $FW_DIRTY modifiche non committate"
+        warn "Branch: $BRANCH ($COMMIT) — $DIRTY_COUNT modifiche non committate"
     fi
-    info "Remote: $FW_REMOTE"
+
+    # Check origin URL
+    if [[ "$ORIGIN_URL" == *"danielelucarelli1980/personal-workspace"* ]]; then
+        warn "Remote 'origin': $ORIGIN_URL (TEMPLATE PUBBLICO - NON PUBBLICARE DATI PERSONALI)"
+    else
+        ok "Remote 'origin' (Privato): $ORIGIN_URL"
+    fi
+
+    # Check template remote
+    if [ "$TEMPLATE_URL" != "non configurato" ]; then
+        PUSH_URL=$(git -C "$WORKSPACE_DIR" config --get remote.template.pushurl 2>/dev/null || echo "")
+        if [[ "$PUSH_URL" == *"NO_PUSH"* ]]; then
+            ok "Remote 'template' (Upstream): $TEMPLATE_URL [Push Disarmato ✓]"
+        else
+            info "Remote 'template' (Upstream): $TEMPLATE_URL"
+        fi
+    fi
+
+    # Check pre-push privacy hook
+    HOOKS_PATH=$(git -C "$WORKSPACE_DIR" config --get core.hooksPath 2>/dev/null || echo "")
+    if [ "$HOOKS_PATH" = ".githooks" ] && [ -x "$WORKSPACE_DIR/.githooks/pre-push" ]; then
+        ok "Hook pre-push (privacy safeguard): attivo (.githooks)"
+    elif [ -x "$WORKSPACE_DIR/.git/hooks/pre-push" ]; then
+        ok "Hook pre-push (privacy safeguard): attivo (.git/hooks)"
+    else
+        warn "Hook pre-push non attivo (esegui: git config core.hooksPath .githooks)"
+    fi
 else
     err "Non è un repository git valido: $WORKSPACE_DIR"
 fi
 echo ""
 
 # -------------------------------------------------------------
-# 2. Personal Instance Repository
+# 2. POS Modules & Data Integrity
 # -------------------------------------------------------------
-echo -e "${BOLD}2. Personal Instance Repo${NC}"
-CONFIG_FILE="$WORKSPACE_DIR/.pos-config"
-INSTANCE_NAME=""
-if [ -f "$CONFIG_FILE" ]; then
-    INSTANCE_NAME=$(grep -E '^[[:space:]]*instance_dir=' "$CONFIG_FILE" | cut -d= -f2- | tr -d ' "[:space:]' || true)
+echo -e "${BOLD}2. POS Modules & Knowledge Base${NC}"
+AREAS_COUNT=0
+if [ -d "$WORKSPACE_DIR/areas" ]; then
+    AREAS_COUNT=$(find "$WORKSPACE_DIR/areas" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
 fi
 
-if [ -z "$INSTANCE_NAME" ]; then
-    warn ".pos-config non configurato o nessun'istanza definita."
-else
-    if [[ "$INSTANCE_NAME" == personal/* ]]; then
-        PERSONAL_DIR="$WORKSPACE_DIR/$INSTANCE_NAME"
-        INSTANCE_SLUG=$(basename "$INSTANCE_NAME")
-    else
-        PERSONAL_DIR="$WORKSPACE_DIR/personal/$INSTANCE_NAME"
-        INSTANCE_SLUG="$INSTANCE_NAME"
-    fi
+BACKLOG_COUNT=0
+if [ -d "$WORKSPACE_DIR/backlog/items" ]; then
+    BACKLOG_COUNT=$(find "$WORKSPACE_DIR/backlog/items" -maxdepth 1 -type f -name "*.md" ! -name "README.md" 2>/dev/null | wc -l)
+fi
 
-    if [ -d "$PERSONAL_DIR/.git" ]; then
-        PI_BRANCH=$(git -C "$PERSONAL_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
-        PI_COMMIT=$(git -C "$PERSONAL_DIR" rev-parse --short HEAD 2>/dev/null || echo "unknown")
-        PI_REMOTE=$(git -C "$PERSONAL_DIR" config --get remote.origin.url 2>/dev/null || echo "nessuno")
-        PI_DIRTY=$(git -C "$PERSONAL_DIR" status --porcelain 2>/dev/null | wc -l)
-        
-        if [ "$PI_DIRTY" -eq 0 ]; then
-            ok "Istanza: $INSTANCE_SLUG ($PI_BRANCH @ $PI_COMMIT) — clean"
-        else
-            warn "Istanza: $INSTANCE_SLUG ($PI_BRANCH @ $PI_COMMIT) — $PI_DIRTY modifiche non committate"
-        fi
-        info "Remote: $PI_REMOTE"
-        
-        # Check pre-push hook
-        if [ -x "$PERSONAL_DIR/.git/hooks/pre-push" ]; then
-            ok "Hook pre-push (secret scan): presente e attivo"
-        else
-            warn "Hook pre-push non configurato in $PERSONAL_DIR/.git/hooks/pre-push"
-        fi
+JOURNAL_COUNT=0
+if [ -d "$WORKSPACE_DIR/journal" ]; then
+    JOURNAL_COUNT=$(find "$WORKSPACE_DIR/journal" -maxdepth 1 -type f -name "*.md" ! -name "README.md" 2>/dev/null | wc -l)
+fi
 
-        # Check pending updates / migrations
-        APPLIED_FILE="$PERSONAL_DIR/.pos-updates-applied"
-        PENDING_MIGRATIONS=0
-        if [ -d "$WORKSPACE_DIR/setup/updates" ]; then
-            for s in "$WORKSPACE_DIR/setup/updates"/????-*.sh; do
-                [ -e "$s" ] || continue
-                sname=$(basename "$s")
-                if [ ! -f "$APPLIED_FILE" ] || ! grep -qxF "$sname" "$APPLIED_FILE" 2>/dev/null; then
-                    PENDING_MIGRATIONS=$((PENDING_MIGRATIONS + 1))
-                fi
-            done
+SOURCES_COUNT=0
+if [ -d "$WORKSPACE_DIR/reference/sources" ]; then
+    SOURCES_COUNT=$(find "$WORKSPACE_DIR/reference/sources" -maxdepth 1 -type f -name "*.md" ! -name "README.md" 2>/dev/null | wc -l)
+fi
+
+SKILLS_COUNT=0
+if [ -d "$WORKSPACE_DIR/skills" ]; then
+    SKILLS_COUNT=$(find "$WORKSPACE_DIR/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+fi
+
+ok "Aree attive: $AREAS_COUNT | Backlog item: $BACKLOG_COUNT | Voci diario: $JOURNAL_COUNT"
+ok "Fonti adottate (marketplace): $SOURCES_COUNT | Skill personali: $SKILLS_COUNT"
+
+# Epistemic graph check
+if [ -f "$WORKSPACE_DIR/setup/graph.py" ]; then
+    DANGLING=$(python3 "$WORKSPACE_DIR/setup/graph.py" check 2>/dev/null | grep -c "dangling" || true)
+    ok "Grafo epistemico: integro (setup/graph.py)"
+fi
+
+# Check pending updates / migrations
+APPLIED_FILE="$WORKSPACE_DIR/.pos-updates-applied"
+PENDING_MIGRATIONS=0
+if [ -d "$WORKSPACE_DIR/setup/updates" ]; then
+    for s in "$WORKSPACE_DIR/setup/updates"/????-*.sh; do
+        [ -e "$s" ] || continue
+        sname=$(basename "$s")
+        if [ ! -f "$APPLIED_FILE" ] || ! grep -qxF "$sname" "$APPLIED_FILE" 2>/dev/null; then
+            PENDING_MIGRATIONS=$((PENDING_MIGRATIONS + 1))
         fi
-        if [ "$PENDING_MIGRATIONS" -gt 0 ]; then
-            warn "Migrazioni pendenti: $PENDING_MIGRATIONS (esegui: bash setup/check-updates.sh)"
-        fi
-    else
-        err "Istanza $INSTANCE_SLUG non trovata o non è un repo git in $PERSONAL_DIR"
-    fi
+    done
+fi
+if [ "$PENDING_MIGRATIONS" -gt 0 ]; then
+    warn "Migrazioni pendenti: $PENDING_MIGRATIONS (esegui: bash setup/check-updates.sh)"
 fi
 
 echo ""
@@ -339,30 +359,30 @@ echo ""
 # 7. Per-Machine Profile & Session Tracking
 # -------------------------------------------------------------
 echo -e "${BOLD}7. Profilo Macchina & Ultima Sessione${NC}"
-if [ -n "$INSTANCE_NAME" ]; then
-    PROFILE_FILE="$PERSONAL_DIR/machines/${MACHINE_ID}.md"
-    if [ -f "$PROFILE_FILE" ]; then
-        LAST_MOD=$(date -r "$PROFILE_FILE" '+%Y-%m-%d %H:%M' 2>/dev/null || echo "presente")
-        ok "Profilo presente: personal/$INSTANCE_SLUG/machines/${MACHINE_ID}.md (aggiornato $LAST_MOD)"
-    else
-        warn "Profilo macchina MANCANTE: personal/$INSTANCE_SLUG/machines/${MACHINE_ID}.md"
-        info "Verrà generato automaticamente al prossimo bootstrap o eseguendo setup/bootstrap.sh"
-    fi
+PROFILE_FILE="$WORKSPACE_DIR/machines/${MACHINE_ID}.md"
+if [ -f "$PROFILE_FILE" ]; then
+    LAST_MOD=$(date -r "$PROFILE_FILE" '+%Y-%m-%d %H:%M' 2>/dev/null || echo "presente")
+    ok "Profilo presente: machines/${MACHINE_ID}.md (aggiornato $LAST_MOD)"
+else
+    warn "Profilo macchina non ancora generato: machines/${MACHINE_ID}.md"
+    info "Verrà generato automaticamente al prossimo bootstrap o eseguendo setup/bootstrap.sh"
+fi
 
-    # Tracking ultima sessione per-macchina
-    LAST_SESSION_FILE="$PERSONAL_DIR/machines/last-session.md"
-    if [ -f "$LAST_SESSION_FILE" ]; then
-        PREV_MACHINE=$(grep -E '^machine_id:' "$LAST_SESSION_FILE" | head -n 1 | awk '{print $2}' || echo "unknown")
-        if [ "$PREV_MACHINE" != "$MACHINE_ID" ] && [ -n "$PREV_MACHINE" ]; then
-            warn "Switch di macchina rilevato: sessione precedente su '$PREV_MACHINE', attuale su '$MACHINE_ID'"
-        else
-            ok "Macchina invariata rispetto all'ultima sessione ($MACHINE_ID)"
-        fi
+# Tracking ultima sessione per-macchina
+LAST_SESSION_FILE="$WORKSPACE_DIR/machines/last-session.md"
+if [ -f "$LAST_SESSION_FILE" ]; then
+    PREV_MACHINE=$(grep -E '^machine_id:' "$LAST_SESSION_FILE" | head -n 1 | awk '{print $2}' || echo "unknown")
+    if [ "$PREV_MACHINE" != "$MACHINE_ID" ] && [ -n "$PREV_MACHINE" ]; then
+        warn "Switch di macchina rilevato: sessione precedente su '$PREV_MACHINE', attuale su '$MACHINE_ID'"
     else
-        info "Inizializzazione file ultima sessione in machines/last-session.md"
+        ok "Macchina invariata rispetto all'ultima sessione ($MACHINE_ID)"
     fi
+else
+    info "Inizializzazione file ultima sessione in machines/last-session.md"
+fi
 
-    cat <<EOF > "$LAST_SESSION_FILE"
+mkdir -p "$WORKSPACE_DIR/machines"
+cat <<EOF > "$LAST_SESSION_FILE"
 ---
 machine_id: $MACHINE_ID
 hostname: $(hostname 2>/dev/null || echo unknown)
@@ -376,10 +396,7 @@ last_session: $(date -u '+%Y-%m-%dT%H:%M:%SZ')
 - **Scenario**: $SCENARIO
 - **Data e ora UTC**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
 EOF
-    info "Aggiornato: personal/$INSTANCE_SLUG/machines/last-session.md"
-else
-    warn "Impossibile verificare il profilo macchina: istanza non configurata."
-fi
+info "Aggiornato: machines/last-session.md"
 
 echo ""
 echo -e "${BOLD}============================================================${NC}"

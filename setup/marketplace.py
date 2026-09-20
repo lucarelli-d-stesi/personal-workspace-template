@@ -73,7 +73,10 @@ def parse_frontmatter(filepath):
 
 
 def get_active_instance_dir():
-    """Finds the active personal instance directory from .pos-config."""
+    """Finds the active personal instance directory: root reference/sources in unified single-repo, or .pos-config fallback."""
+    root_ref = os.path.join(WORKSPACE_DIR, "reference", "sources")
+    if os.path.isdir(root_ref):
+        return WORKSPACE_DIR
     if not os.path.isfile(CONFIG_FILE):
         return None
     with open(CONFIG_FILE, "r", encoding="utf-8") as f:
@@ -290,7 +293,7 @@ def show_info(item_query):
 
     print(f"\n{BOLD}Come Adottarlo nella tua Istanza:{NC}")
     print(f"  1. Chiedi al tuo assistente AI: {CYAN}\"Attiva {matched['file'].replace('.md', '')} nella mia area <area>\"{NC}")
-    print(f"  2. Oppure crea il Thin Overlay in: {DIM}personal/<tua-istanza>/reference/sources/{matched['file']}{NC}")
+    print(f"  2. Oppure crea il Thin Overlay in: {DIM}reference/sources/{matched['file']}{NC}")
     print(f"     contenente:")
     print(f"       ---")
     print(f"       name: {matched['name']}")

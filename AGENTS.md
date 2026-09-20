@@ -5,91 +5,105 @@ Questo file definisce le linee guida universali e vincolanti per qualsiasi agent
 
 ---
 
-## 1. Architettura a Due Livelli: Framework e Istanza Personale
+## 1. Architettura del Personal Operating System (Unified Single-Repo)
 
-Il sistema si fonda sulla netta separazione tra **Base Operativa Condivisa (Framework)** e **Contesto Individuale (Istanza Personale)**, consentendo a persone diverse (colleghi, familiari, studenti) di usare la stessa base operativa con configurazioni individuali completamente isolate:
+Il sistema adotta un modello a **Repository Unico per Utente derivato da un Template Canonico Centralizzato**:
 
-1. **Workspace Generale (`personal-workspace`) — Base Operativa Comune**:
-   - È agnostico rispetto all'individuo e funge da motore operativo.
-   - Contiene: principi fondanti e convenzioni (`kernel/`), routine operative (`knowledge/playbooks/`), **skill metodologiche generali** (gestione progetti, redazione testi), script di automazione (`setup/bootstrap.sh`).
-   - **Nessuna attività né dato personale qui**: non esistono `areas/` né `backlog/` nel framework. Nessun dato privato è tracciato in questo repository.
-2. **Workspace Personale (`personal/<instance_dir>/`, es. `personal/daniele-lucarelli-pos/`)**:
-   - È il repository privato di ciascun individuo (indicato nel file locale `.pos-config`).
-   - Contiene:
-     - **Valori e confini individuali**: `profile/values.md`, `boundaries.md`, `style.md`, `observations.md`.
-     - **Fonti e reference personali**: documentazione tecnica privata, note di studio o lavoro (`reference/`, `knowledge/`).
-     - **Tutti i filoni di attività**: vita familiare, veicoli, casa, finanze, salute, carriera, progetti personali (`areas/`, `backlog/items/`, `journal/`, `inbox/`).
-     - **Skill specialistiche individuali**: competenze legate al proprio dominio o percorso (es. skill Odoo per lo sviluppatore, traduzione dal latino per la studentessa del liceo, analisi logica per le medie) in `skills/`.
+1. **Il Repository dell'Utente (Privato)**:
+   - Ogni individuo possiede un unico repository Git privato (es. `utente/mio-pos`), generato a partire dal template pubblico comune.
+   - **Tutte le attività, aree, note e valori personali risiedono direttamente alla radice** del workspace, eliminando qualsiasi annidamento fragile o configurazione complessa.
+2. **Il Template Canonico Upstream (Pubblico)**:
+   - Il repository `danielelucarelli1980/personal-workspace` funge da **template pubblico e fonte di aggiornamento**.
+   - Fornisce: principi e convenzioni (`kernel/`), routine operative (`knowledge/playbooks/`), catalogo strumenti (`knowledge/sources/`), skill metodologiche generali (`.agents/skills/`), script di gestione (`setup/`).
+   - È collegato nel workspace dell'utente come remote `template` in sola lettura (con push disarmato).
 
 ### Principi Fondamentali (Kernel)
 I principi del kernel in `kernel/principles.md` e le convenzioni in `kernel/conventions.md` sono vincolanti:
 1. *I fatti battono le opinioni*: non inventare o alterare dati storici o fattuali.
 2. *Proponi, non imporre*: l'agente prepara, ricorda e propone; l'essere umano decide.
 3. *Reversibilità e append-only*: log e worklog si appendono; modifiche distruttive richiedono conferma esplicita.
-4. *Privacy by architecture*: dati personali, valori e attività vivono solo nell'istanza privata. Nessun dato operativo o sensibile risiede nel framework pubblico.
+4. *Privacy by architecture*: dati personali, valori e attività vivono solo nel repository privato dell'utente. Nessun dato operativo o sensibile deve mai finire nel template pubblico.
 
 ---
 
-## 2. Struttura del Workspace e Routing
+## 2. Struttura del Workspace e Confini di Directory
 
 ```
-personal-workspace/                     # FRAMEWORK / BASE OPERATIVA (Condivisa e Agnostica)
-├── AGENTS.md / CLAUDE.md / GEMINI.md   # Istruzioni universali per gli agenti
-├── kernel/                             # Costituzione: principi non negoziabili e convenzioni
-├── knowledge/playbooks/                # Routine: harvesting, review settimanale, knowledge GC
-├── .agents/skills/                     # SKILL METODOLOGICHE GENERALI (comuni a tutti)
-│   ├── project-management/             # Metodologia WBS, stime, cronoprogramma, milestone
-│   ├── text-drafting/                  # Metodo di redazione e revisione testi
-│   └── <instance-skills-link>          # [GITIGNORED] Collegamenti locali alle skill dell'istanza
-├── setup/                              # Script di bootstrap e template
-│   └── bootstrap.sh                    # Setup automatico, deploy repo privato e indicizzazione
-└── personal/                           # [GITIGNORED nel framework] Istanze private individuali
-    └── <instance_dir>/                 # Repository privato dell'utente (.pos-config: instance_dir)
-        ├── profile/                    # Valori personali, confini, stile, osservazioni
-        ├── machines/<id>.md            # Profilo per-macchina: hardware, scenario, tool locali
-        ├── skills/                     # SKILL SPECIALISTICHE PERSONALI (es. odoo-*, latino, ecc.)
-        ├── reference/                  # Fonti e reference tecniche private dell'utente
-        ├── knowledge/                  # Conoscenza ed esperienza distillata personale
-        ├── areas/                      # TUTTI I FILONI DI ATTIVITÀ DELL'UTENTE
-        │   └── <area>/                 # STATUS.md, context.md, specs/, worklog/
-        ├── backlog/items/              # Item e task di tutti i filoni (<area>-<NNN>.md)
-        ├── projects/                   # [GITIGNORED] Cartelle funzionali e repository di codice autonomi
-        ├── inbox/                      # Cattura rapida e note grezze
-        └── journal/                    # Diario cross-area
+personal-workspace/                     # UNICO REPOSITORY PRIVATO DELL'UTENTE
+├── kernel/                             # [FRAMEWORK] Principi non negoziabili e convenzioni
+├── setup/                              # [FRAMEWORK] Script di bootstrap, sync, status, graph, marketplace
+├── knowledge/
+│   ├── playbooks/                      # [FRAMEWORK] Routine (harvesting, review settimanale, knowledge GC)
+│   ├── sources/ (alias: marketplace/)  # [FRAMEWORK] Vetrina marketplace (strumenti e connettori)
+│   └── <argomenti>/                    # [PERSONALE] Conoscenza personale distillata (es. politica, salute)
+├── .agents/skills/                     # [FRAMEWORK] Skill metodologiche universali (WBS, drafting)
+├── AGENTS.md / CLAUDE.md / GEMINI.md   # [FRAMEWORK] Istruzioni universali per gli agenti
+│
+├── profile/                            # [PERSONALE] Valori personali, confini, stile, osservazioni
+├── machines/<id>.md                    # [PERSONALE] Profilo hardware e strumenti per-macchina
+├── areas/<area>/                       # [PERSONALE] Filoni di attività (STATUS.md, context.md, specs, worklog)
+├── backlog/items/                      # [PERSONALE] Task e iniziative (<area>-<NNN>.md)
+├── journal/                            # [PERSONALE] Diario cross-area
+├── inbox/                              # [PERSONALE] Cattura rapida e note grezze
+├── reference/sources/                  # [PERSONALE] Thin Overlays adottati dal marketplace
+├── skills/                             # [PERSONALE] Skill specialistiche individuali (es. odoo-*, latino)
+└── projects/                           # [PERSONALE - GITIGNORED] Codebase software e cloni indipendenti
 ```
 
 ### Regole di Routing per gli Agenti:
-1. **Zero attività alla radice comune**:
-   - NON creare MAI cartelle `areas/` o `backlog/` nel framework `personal-workspace/`.
-   - Modifiche al framework riguardano unicamente: regole generali, skill metodologiche universali, playbooks e setup.
-2. **Tutte le attività vivono nel workspace personale**:
-   - Ogni task operativo, spec, worklog o aggiornamento di stato va scritto e mantenuto ESCLUSIVAMENTE dentro `<instance_dir>/areas/<area>/` e `<instance_dir>/backlog/items/`.
-3. **Organic Discovery (Nessuna intervista iniziale)**:
-   - Non avviare questionari o interviste a freddo. Aree, attività e profilo emergono organicamente dalle richieste e dal lavoro quotidiano.
-4. **Sviluppo Software e Cloni di Repository (`projects/`)**:
-   - Quando un task richiede di sviluppare un nuovo software/tool o clonare repository esterni (es. estensioni Odoo, CLI, script, blueprint), opera sempre dentro `<instance_dir>/projects/<nome-progetto>/`.
-   - Ciascuna cartella in `projects/` è un **repository Git indipendente** (con il proprio `.git` e remote); non innestare mai repository Git non tracciati né committare codice o dipendenze nel repo personale.
-   - Nel POS mantieni esclusivamente la governance: item di backlog (`project_dir: projects/<nome-progetto>`), spec architetturale e worklog. A completamento, distilla le lezioni apprese in `knowledge/` o nuove skill.
+1. **Dati Personali Direttamente alla Radice**:
+   - Ogni task operativo, spec, worklog o aggiornamento di stato va scritto e mantenuto ESCLUSIVAMENTE dentro `areas/<area>/` e `backlog/items/`.
+   - Nessuna nota o dato personale va inserito nei file del framework (`kernel/`, `setup/`, `knowledge/sources/`, `knowledge/playbooks/`).
+2. **Organic Discovery (Nessuna intervista iniziale)**:
+   - Non avviare questionari o interviste a freddo all'onboarding. Aree, attività e profilo emergono organicamente dalle richieste e dal lavoro quotidiano.
+3. **Sviluppo Software e Cloni di Repository (`projects/`)**:
+   - Quando un task richiede di sviluppare un software/tool o clonare repository esterni, opera sempre dentro `projects/<nome-progetto>/`.
+   - Ciascuna cartella in `projects/` è un **repository Git indipendente** (con il proprio `.git` e remote); non committare codice sorgente o dipendenze nel repo del POS.
+   - Nel POS mantieni esclusivamente la governance: item di backlog (`project_dir: projects/<nome-progetto>`), spec architetturale e worklog.
 
 ---
 
-## 3. Memoria Associativa e Ricerca Semantica (`zg` / `zvgrep`)
+## 3. Git Topology Awareness & Cognitive Push Safeguard
 
-Le attività personali non sono compartimenti stagni: si collegano per **vicinanza semantica** (es. rinnovo RCA auto che si allarga a polizze capofamiglia e polizza vita).
+L'agente LLM agisce come **guardiano preventivo della riservatezza (Cognitive Guard)**:
+
+1. **Verifica Topologia Remote Pre-Push**:
+   Prima di eseguire o proporre qualsiasi comando `git push`, l'agente DEVE controllare i remote configurati (`git remote -v`):
+   - **Rilevamento Clone Template**: Se `origin` punta al repository pubblico del template (`danielelucarelli1980/personal-workspace`), l'agente **NON DEVE MAI** eseguire push di commit contenenti modifiche a `areas/`, `profile/`, `backlog/`, `journal/`, `inbox/`.
+   - **Intervento Proattivo**: L'agente blocca l'azione e spiega:
+     > *"⚠️ Attenzione: il tuo workspace sta usando come 'origin' il template pubblico. I tuoi dati personali non devono essere inviati lì! Ti aiuto a creare un tuo repository GitHub privato (es. tuo-utente/mio-pos) e a reindirizzare 'origin'."*
+2. **Remote Template di Sola Lettura**:
+   - Il remote `template` serve unicamente per ricevere aggiornamenti del framework (`git fetch template main`).
+   - Il push verso `template` deve sempre rimanere disarmato (`git remote set-url --push template NO_PUSH_UPSTREAM_TEMPLATE`).
+
+---
+
+## 4. Memoria Associativa, Ricerca Semantica (`zg`) e Grafo Epistemico
 
 1. **Avvio Prompt (Kickoff semantico)**:
-   - All'inizio di un task complesso o trasversale, usa `zg query "<argomento>"` (o il tool MCP `zvec_grep_search` con `root: <personal-workspace>`) per recuperare note ed esperienze pregresse da tutto il workspace personale.
+   - All'inizio di un task complesso o trasversale, usa `zg query "<argomento>"` (o il tool MCP `zvec_grep_search`) per recuperare note ed esperienze pregresse da tutto il workspace.
 2. **Virata in corso d'opera (Dynamic Pivot)**:
    - Se l'utente devia o allarga il focus verso un altro tema, non forzare riorganizzazioni di cartelle: lancia una nuova query semantica per richiamare vincoli e note del nuovo ambito.
-3. **Fine Sessione (Harvesting)**:
+3. **Grafo Epistemico & Relazioni Tipizzate (Track 1)**:
+   - Quando crei note o documenti di conoscenza, adotta relazioni tipizzate nel frontmatter YAML:
+     ```yaml
+     status: active | superseded | deprecated | proposed
+     supersedes: [slug-nota-precedente]
+     depends_on: [slug-dipendenza]
+     conflicts_with: [slug-contraddizione]
+     supports: [slug-argomento]
+     ```
+   - Se una nota ne sostituisce un'altra, aggiungi un disclaimer evidente in cima al vecchio documento:
+     `> ⚠️ SUPERSEDED BY [Titolo Nuovo](file:///...) in data YYYY-MM-DD`
+   - Usa `python3 setup/graph.py check` o `python3 setup/graph.py lineage <slug>` per verificare l'integrità e la discendenza delle note.
+4. **Fine Sessione (Harvesting)**:
    - Segui `knowledge/playbooks/harvesting.md`:
-     - L'azione contingente con scadenza va nel backlog dell'area con tag trasversali (`tags: [veicoli, assicurazioni, famiglia]`).
-     - Le lezioni generali apprese vanno salvate in una nota tematica in `<instance_dir>/knowledge/`.
-     - L'indice semantico si aggiorna automaticamente, rendendo l'esperienza subito disponibile per il futuro.
+     - L'azione contingente con scadenza va nel backlog dell'area con tag trasversali.
+     - Le lezioni generali apprese vanno salvate in una nota tematica in `knowledge/`.
 
 ---
 
-## 4. Separazione e Sovranità degli Ambiti (STeSI vs Personal)
+## 5. Separazione e Sovranità degli Ambiti (STeSI vs Personal)
 
 1. **Isolamento Rigoroso**:
    - Gli indici vettoriali di STeSI e del Personal Workspace risiedono su file distinti (`index.zvec`). Non esiste contaminazione o contraddizione implicita.
@@ -99,63 +113,41 @@ Le attività personali non sono compartimenti stagni: si collegano per **vicinan
 
 ---
 
-## 5. Asse Macchina e Consapevolezza dell'Ambiente Locale
-
-Il workspace può girare su ambienti differenti (VM Linux, WSL2, macOS, bare-metal). L'agente deve essere consapevole del contesto di esecuzione e dei tool a disposizione:
+## 6. Asse Macchina e Consapevolezza dell'Ambiente Locale
 
 1. **Profilo Macchina (`machines/<id>.md`)**:
-   - Ogni macchina possiede un file dedicato in `<instance_dir>/machines/<id>.md` (nome = hostname slug, es. `stesi-workspace.md`).
-   - Prima di proporre comandi di sistema, script o esecuzione di tool pesanti, consulta il profilo per verificare: scenario (`vm`, `wsl`, `mac`, `linux`), vCPU/RAM disponibili, Docker runtime e versioni di Node/Python/CLI LLM installate.
+   - Ogni macchina possiede un file dedicato in `machines/<id>.md` (nome = hostname slug, es. `stesi-workspace.md`).
+   - Prima di proporre comandi di sistema, script o esecuzione di tool pesanti, consulta il profilo per verificare: scenario (`vm`, `wsl`, `mac`, `linux`), vCPU/RAM disponibili, Docker runtime e versioni installate.
 2. **Tracciamento Sessione e Rilevamento Switch (`machines/last-session.md`)**:
-   - In `<instance_dir>/machines/last-session.md` viene registrata l'ultima macchina su cui si è svolta una sessione (`machine_id`, data/ora).
-   - **Avvio di sessione su nuova macchina**: all'avvio di una sessione, se l'hostname/machine_id corrente differisce da quanto registrato in `last-session.md` (switch di macchina), l'agente esegue automaticamente `bash setup/status.sh` per verificare la salute del nodo, l'allineamento git e lo stato dell'indice semantico `zg`, aggiornando `last-session.md`.
-3. **Audit del Deploy (`setup/status.sh` o `setup/bootstrap.sh --check`)**:
-   - Se emergono dubbi sullo stato del setup, allineamento git o tool mancanti, esegui o consiglia `bash setup/status.sh` per un quadro diagnostico immediato prima di avviare le attività.
+   - In `machines/last-session.md` viene registrata l'ultima macchina su cui si è svolta una sessione.
+   - All'avvio di sessione, se l'hostname differisce da quanto registrato (switch di macchina), l'agente esegue automaticamente `bash setup/status.sh` per verificare la salute del nodo e allineare lo stato.
+3. **Audit del Deploy (`setup/status.sh`)**:
+   - In caso di dubbi sullo stato del setup, allineamento git o tool mancanti, esegui o consiglia `bash setup/status.sh`.
 
 ---
 
-## 6. POS Marketplace & Fonti Esterne (Framework vs Istanza)
-
-Il POS definisce un modello ad **Ecosystem Hub / Marketplace** che separa gli strumenti pubblicamente disponibili nel framework dalla loro adozione opzionale nel contesto privato del singolo utente:
+## 7. POS Marketplace & Fonti Esterne
 
 1. **Marketplace del Framework (`knowledge/sources/` e symlink `marketplace/`)**:
-   - Raccoglie la vetrina condivisa di strumenti, connettori e basi di conoscenza:
-     - **Banche Dati / Data Sources** (es. `italia-corpus` per 280.000 leggi e atti italiani).
-     - **Connettori CLI & API** (es. `classeviva` per il registro elettronico scolastico).
-     - **Server MCP** (es. `google-workspace-mcp` per Gmail/Calendar/Drive, `google-maps-mcp` per percorsi e meteo).
-     - **Skill Specialistiche** (es. `publora` per la gestione di 7 piattaforme social contemporaneamente).
-     - **Blueprint Architetturali** (es. `cetmix-tower` per stack DevOps e Docker Odoo).
-   - Vetrina strutturata e consultabile: [`knowledge/sources/INDEX.md`](knowledge/sources/INDEX.md).
-   - Script di ispezione e stato: `bash setup/marketplace.sh` (oppure `python3 setup/marketplace.py --json`).
-2. **Comportamento dell'Agente per il Marketplace**:
-   - **Richiesta esplicita di consultazione**: quando l'utente chiede *"cosa c'è nel marketplace?"*, *"mostrami gli strumenti disponibili"*, *"cosa posso installare per la scuola/leggi/social?"*, l'agente consulta `knowledge/sources/INDEX.md` (o `marketplace.py`) e presenta una panoramica chiara distinguendo ciò che è già attivo da ciò che è disponibile per l'adozione.
-   - **Suggerimento proattivo contestuale**: quando l'utente affronta un'attività pertinente (es. compiti scolastici, decreti di legge, invio email, pianificazione trasferte), l'agente verifica i `triggers` delle fonti a catalogo e **propone proattivamente lo strumento** senza imporre nulla.
-   - **Attivazione a 1-Click (Thin Overlay)**: se l'utente accetta, l'agente crea la scheda in `personal/<istanza>/reference/sources/<id>.md` (`source_ref: knowledge/sources/<id>.md`, `areas: [...]`) e guida alla configurazione delle eventuali credenziali in `~/.config/pos/<id>.env`.
-3. **Fonti Private dell'Utente (Nessuna Promozione nel Framework)**:
-   - Se una fonte è strettamente personale e privata (es. blog personale come *Uomini Oltre la Violenza*, cartelle Drive riservate, dossier interni), vive **esclusivamente** nell'istanza dell'utente (`reference/sources/`) e **non viene mai aggiunta al marketplace pubblico del framework**.
-4. **Ciclo di Vita & Rilevamento Fonti Orfane (Lifecycle)**:
-   - Se uno strumento a catalogo viene dismesso o deprecato (`status: deprecated`), l'agente smette di proporlo ai nuovi utenti.
-   - Se un file viene rimosso dal framework, `check-updates.sh` rileva la fonte orfana e l'agente propone all'utente di archiviarla in `reference/sources/archive/` o congelarla in locale, garantendo che nessun dato o nota storica personale venga mai perso.
+   - Raccoglie la vetrina condivisa di strumenti, connettori e basi di conoscenza (`INDEX.md` o `bash setup/marketplace.sh`).
+2. **Comportamento dell'Agente**:
+   - **Richiesta esplicita**: presenta una panoramica chiara distinguendo ciò che è attivo da ciò che è disponibile.
+   - **Suggerimento proattivo contestuale**: quando l'utente affronta un'attività pertinente (es. compiti scolastici, normative, invio email, pianificazione trasferte), propone lo strumento a catalogo senza imporre nulla.
+   - **Attivazione a 1-Click (Thin Overlay)**: se l'utente accetta, crea la scheda in `reference/sources/<id>.md` (`source_ref: knowledge/sources/<id>.md`, `areas: [...]`) e guida alla configurazione delle eventuali credenziali in `~/.config/pos/<id>.env`.
+3. **Fonti Private dell'Utente**:
+   - Se una fonte è strettamente personale e privata, vive **esclusivamente** nell'istanza dell'utente (`reference/sources/`) e **non viene mai aggiunta al catalogo pubblico del framework**.
 
 ---
 
-## 7. Aggiornamenti del Framework e del Template (Zero-Knowledge Sync)
+## 8. Aggiornamenti del Framework dal Template (Zero-Knowledge Sync)
 
-Il framework (`personal-workspace`) e il template di istanza (`pos-instance-template`) si evolvono nel tempo (nuove convenzioni, estensioni di configurazione, nuove fonti o script di manutenzione). Poiché i dati personali risiedono in repository privati distinti, gli aggiornamenti avvengono secondo un modello a **conoscenza zero (zero-knowledge)** mediato dall'agente locale:
-
-1. **Trigger da parte dell'utente**:
-   - Quando l'utente chiede *"ci sono novità nel workspace?"*, *"verifica aggiornamenti"*, *"aggiorna il template"* o simili, l'agente esegue lo strumento di diagnostica:
+1. **Trigger**:
+   - Quando l'utente chiede *"ci sono novità nel workspace?"*, *"verifica aggiornamenti"* o simili, l'agente esegue:
      ```bash
      bash setup/check-updates.sh
      ```
 2. **Analisi e Proposta trasparente**:
-   - L'agente analizza l'output di `check-updates.sh`:
-     - **Aggiornamenti Framework**: se il repository del framework è indietro rispetto a `origin/main`, spiega i commit in arrivo e propone l'aggiornamento.
-     - **Migrazioni di struttura (`setup/updates/`)**: legge gli script `NNNN-*.sh` pendenti, ne riassume l'effetto in linguaggio naturale, esegue un controllo di sicurezza (assenza di operazioni distruttive) e chiede conferma per l'applicazione (`bash setup/check-updates.sh --apply-migrations`).
-     - **Allineamento Configurazione & Template**: se emergono nuove regole `.gitignore`, directory mancanti o nuove guide, ne propone la sincronizzazione non distruttiva (`bash setup/check-updates.sh --sync`).
-     - **Nuovi campi di metadati**: se sono stati introdotti nuovi campi nei template (es. `## Current phase and climate` in `context.md`), l'agente propone all'utente di integrarli nei file delle proprie aree, guidando la compilazione.
+   - Se il remote `template` ha rilasciato nuove feature o fix al framework, ne spiega l'effetto.
+   - Con `bash setup/check-updates.sh --apply`, preleva i file aggiornati del framework e applica eventuali migrazioni in `setup/updates/`.
 3. **Inviolabilità dei dati personali**:
-   - Non vengono mai sovrascritti né eliminati file utente in `profile/`, `areas/`, `backlog/`, `journal/` o `knowledge/`.
-   - Nessun dato personale viene mai trasmesso all'esterno o verso il repository del framework.
-
-
+   - Non vengono mai sovrascritti né eliminati file in `profile/`, `areas/`, `backlog/`, `journal/`, `inbox/`, `skills/` o `knowledge/`.

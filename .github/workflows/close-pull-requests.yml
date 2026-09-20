@@ -1,37 +1,67 @@
-name: Close Pull Requests
+name: Guard Template & Auto-Close External PRs
 
 on:
   pull_request_target:
-    types: [opened]
+    types: [opened, synchronize, reopened]
 
 permissions:
   pull-requests: write
+  contents: read
 
 jobs:
-  close-pr:
+  guard-pr:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout PR head to inspect changed files
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Inspect Changed Files
+        id: check-files
+        run: |
+          # Compare with base repository main
+          git fetch origin main --depth=1
+          CHANGED=$(git diff --name-only origin/main HEAD || true)
+          echo "Changed files:"
+          echo "$CHANGED"
+          
+          PERSONAL_CHANGES=$(echo "$CHANGED" | grep -E '^(areas/|backlog/items/|journal/|inbox/|profile/)' | grep -v -E '(README\.md|\.gitkeep|boundaries\.md|values\.md|style\.md|observations\.md)$' || true)
+          if [ -n "$PERSONAL_CHANGES" ]; then
+            echo "has_personal=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_personal=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Close and Comment
         uses: actions/github-script@v7
         with:
           script: |
-            const comment = `Hi @${context.actor}! 👋
+            const isPersonal = "${{ steps.check-files.outputs.has_personal }}" === "true";
             
-            Thank you for your interest in **Personal Workspace (POS)**.
-            
-            This repository is a personal operating system template and operational base; it does not accept external Pull Requests or contributions.
-            
-            If you would like to use or adapt this workspace for your own life, study, or work:
-            - Click **"Use this template"** (or fork/clone the repository into your own account).
-            - Customize your own personal instance under the terms of the MIT License.
-            
-            Have a great day!`;
+            let message = `Hi @${context.actor}! 👋\n\n`;
+            if (isPersonal) {
+              message += `🚨 **PRIVACY ALERT**: Questa Pull Request sembra contenere modifiche a file o cartelle personali (\`areas/\`, \`profile/\`, \`backlog/\`, \`journal/\`, \`inbox/\`).\n\n` +
+                `Questo repository è esclusivamente il **template pubblico** del Personal Operating System. I tuoi dati personali non devono mai essere resi pubblici a monte!\n\n` +
+                `**Cosa fare:**\n` +
+                `1. Abbiamo chiuso automaticamente questa PR a tutela della tua riservatezza.\n` +
+                `2. Per usare il sistema privatamente, torna su GitHub e clicca sul pulsante verde **"Use this template"** (oppure crea un tuo repository privato e imposta il tuo remote \`origin\`).\n\n` +
+                `Nessun dato personale viene accettato in questo repository.`;
+            } else {
+              message += `Grazie per il tuo interesse verso **Personal Workspace (POS)**.\n\n` +
+                `Questo repository è il template canonico e base operativa comune. Al momento non accetta contributi esterni non concordati via Pull Request.\n\n` +
+                `Se desideri personalizzare o usare questo workspace per la tua vita, studio o lavoro:\n` +
+                `- Clicca su **"Use this template"** nella homepage del repository per generare la tua istanza privata.\n` +
+                `- Usa e adatta liberamente i contenuti sotto licenza MIT.\n\n` +
+                `Questa PR viene chiusa automaticamente.`;
+            }
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
-              body: comment
+              body: message
             });
 
             await github.rest.pulls.update({

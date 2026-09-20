@@ -1,27 +1,32 @@
-# Private instances live here (each is its own git repo) — never tracked
-personal/
+# Autonomous project folders (each is an independent Git repository)
+projects/*/
 
-# Local pointer to the user's instance repo (per machine, per user)
-.pos-config
+# Binary attachments (kept local, not synced via git)
+**/attachments/
 
-# Local LLM settings
-.claude/settings.local.json
-
-# Editor cruft
-*.swp
-.DS_Store
-
-# Local machine-specific reference links (e.g. to STeSI on dev machine)
-/reference/
+# Local machine-specific reference links and overrides
+reference/local-*
 knowledge/stesi-odoo-reference
 
 # Local semantic vector index
 .zvec-grep/
 
-# Instance-specific skills linked locally from personal repo
-.agents/skills/odoo-*
+# Local LLM settings and temporary caches
+.claude/settings.local.json
+.claude/build/
 
 # Python cache
 __pycache__/
 *.py[cod]
 *$py.class
+
+# OS & Editor cruft
+*.swp
+*~
+.DS_Store
+Thumbs.db
+**:Zone.Identifier
+
+# Legacy migration transitional ignores
+personal/
+.pos-config
