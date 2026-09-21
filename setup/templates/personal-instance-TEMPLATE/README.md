@@ -2,7 +2,7 @@
 
 This repository is a **starter template** for your private Personal Instance within the **Personal Operating System (POS)** ecosystem.
 
-While the shared framework ([personal-workspace](https://github.com/danielelucarelli1980/personal-workspace)) provides the operational engine, generic methodology skills, and automation routines, **this repository is your private cognitive space**: it holds your personal life areas, private backlog items, values, machine profiles, and domain skills.
+While the shared framework ([personal-workspace](https://github.com/lucarelli-d-stesi/personal-workspace-template)) provides the operational engine, generic methodology skills, and automation routines, **this repository is your private cognitive space**: it holds your personal life areas, private backlog items, values, machine profiles, and domain skills.
 
 ---
 
@@ -31,7 +31,7 @@ While the shared framework ([personal-workspace](https://github.com/danielelucar
    - Create a new **private** Git repository on GitHub (e.g. `yourname-pos`) using this directory as the initial template.
 2. **Clone the POS Framework**:
    ```bash
-   git clone https://github.com/danielelucarelli1980/personal-workspace.git ~/personal-workspace
+   git clone https://github.com/lucarelli-d-stesi/personal-workspace-template.git ~/personal-workspace
    cd ~/personal-workspace
    ```
 3. **Run the Bootstrap Script**:

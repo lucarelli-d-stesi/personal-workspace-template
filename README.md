@@ -1,6 +1,6 @@
 # Personal Workspace — Personal Operating System (POS)
 
-[![Use this template](https://img.shields.io/badge/GitHub-Use_this_template-2ea44f?style=for-the-badge&logo=github)](https://github.com/new?template_name=personal-workspace&template_owner=lucarelli-d-stesi)
+[![Use this template](https://img.shields.io/badge/GitHub-Use_this_template-2ea44f?style=for-the-badge&logo=github)](https://github.com/new?template_name=personal-workspace-template&template_owner=lucarelli-d-stesi)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <!-- 🤖 AI ASSISTANT ONBOARDING DIRECTIVE (Antigravity CLI, Claude Code, Gemini CLI, Cursor, Codex): -->
@@ -18,7 +18,7 @@ The system follows a clean **Single-Repo per User** model derived from this cano
 1. **Every User Owns a Standalone Private Repository**:
    - Starting from this template via **"Use this template"**, each individual creates their private repository (e.g. `username/my-pos`).
    - **All personal life streams, notes, values, and tasks live directly at the root of the workspace**, eliminating nested directories and mental friction.
-2. **Canonical Upstream Template (`personal-workspace`)**:
+2. **Canonical Upstream Template (`personal-workspace-template`)**:
    - This repository serves as the public template, containing shared principles (`kernel/`), operational routines (`knowledge/playbooks/`), universal methodology skills (`.agents/skills/`), and ecosystem tools (`setup/`, `knowledge/sources/`).
    - Users pull non-destructive framework improvements through `setup/check-updates.sh`.
 
@@ -53,7 +53,7 @@ Because personal notes are Markdown files stored in Git, the POS implements buil
 1. **Cognitive Guard (LLM Instruction Safeguard)**:
    Universal agent instructions in `AGENTS.md` mandate that before proposing or executing `git push`, the AI assistant inspects `git remote -v`. If `origin` points to the public upstream template and personal files are detected, the LLM **aborts the push immediately** and guides the user to set up their private repository.
 2. **Local Pre-Push Git Hook (`.githooks/pre-push`)**:
-   Git hooks activated via `git config core.hooksPath .githooks` physically block any push to `lucarelli-d-stesi/personal-workspace` if changes touch personal directories (`areas/`, `profile/`, `backlog/`, etc.).
+   Git hooks activated via `git config core.hooksPath .githooks` physically block any push to `lucarelli-d-stesi/personal-workspace-template` if changes touch personal directories (`areas/`, `profile/`, `backlog/`, etc.).
 3. **Automated CI PR Blocker (`.github/workflows/close-pull-requests.yml`)**:
    Any Pull Request opened against this public repository is inspected, flagged for privacy protection, and automatically closed.
 
@@ -90,7 +90,7 @@ moderates: [regulative-slug]         # Wuxing Ke (剋): homeostatic balance and 
 ## 4. Quick Start & Onboarding
 
 ### Option A: Via GitHub Web (Recommended for Humans)
-1. Click the green **["Use this template"](https://github.com/new?template_name=personal-workspace&template_owner=lucarelli-d-stesi)** button above.
+1. Click the green **["Use this template"](https://github.com/new?template_name=personal-workspace-template&template_owner=lucarelli-d-stesi)** button above.
 2. Choose **Private** and create your repository (e.g., `username/my-pos`).
 3. Clone your private repository locally and run the bootstrap wizard:
    ```bash
@@ -101,14 +101,14 @@ moderates: [regulative-slug]         # Wuxing Ke (剋): homeostatic balance and 
 
 ### Option B: Via GitHub CLI (`gh`)
 ```bash
-gh repo create my-pos --template lucarelli-d-stesi/personal-workspace --private --clone ~/personal-workspace
+gh repo create my-pos --template lucarelli-d-stesi/personal-workspace-template --private --clone ~/personal-workspace
 cd ~/personal-workspace
 bash setup/bootstrap.sh
 ```
 
 ### Option C: Via AI Assistant Prompt (Agentic Onboarding)
 Tell your AI assistant (Claude Code, Antigravity CLI, Cursor):
-> *"Adopt the memory solution provided by github.com/lucarelli-d-stesi/personal-workspace"*
+> *"Adopt the memory solution provided by github.com/lucarelli-d-stesi/personal-workspace-template"*
 
 The AI will follow the deterministic protocol in [`setup/AGENT_ONBOARDING.md`](setup/AGENT_ONBOARDING.md) to initialize your private repository safely.
 

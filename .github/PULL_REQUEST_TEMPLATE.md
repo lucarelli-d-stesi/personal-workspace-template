@@ -1,6 +1,6 @@
 ## ⚠️ ATTENZIONE: TUTELA DELLA PRIVACY E REGOLE DI CONTRIBUZIONE
 
-Questo repository (`danielelucarelli1980/personal-workspace`) è **esclusivamente il template pubblico e la base operativa comune del Personal Operating System (POS)**.
+Questo repository (`lucarelli-d-stesi/personal-workspace-template`) è **esclusivamente il template pubblico e la base operativa comune del Personal Operating System (POS)**.
 
 ### 🛑 Hai aperto questa Pull Request per errore?
 Se stavi usando il workspace per le tue note personali, i tuoi progetti o le tue aree di vita e GitHub ti ha proposto di aprire una Pull Request:

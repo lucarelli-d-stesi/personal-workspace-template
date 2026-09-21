@@ -13,7 +13,7 @@ Il sistema adotta un modello a **Repository Unico per Utente derivato da un Temp
    - Ogni individuo possiede un unico repository Git privato (es. `utente/mio-pos`), generato a partire dal template pubblico comune.
    - **Tutte le attività, aree, note e valori personali risiedono direttamente alla radice** del workspace, eliminando qualsiasi annidamento fragile o configurazione complessa.
 2. **Il Template Canonico Upstream (Pubblico)**:
-   - Il repository `danielelucarelli1980/personal-workspace` funge da **template pubblico e fonte di aggiornamento**.
+   - Il repository `lucarelli-d-stesi/personal-workspace-template` funge da **template pubblico e fonte di aggiornamento**.
    - Fornisce: principi e convenzioni (`kernel/`), routine operative (`knowledge/playbooks/`), catalogo strumenti (`knowledge/sources/`), skill metodologiche generali (`.agents/skills/`), script di gestione (`setup/`).
    - È collegato nel workspace dell'utente come remote `template` in sola lettura (con push disarmato).
 
@@ -69,7 +69,7 @@ L'agente LLM agisce come **guardiano preventivo della riservatezza (Cognitive Gu
 
 1. **Verifica Topologia Remote Pre-Push**:
    Prima di eseguire o proporre qualsiasi comando `git push`, l'agente DEVE controllare i remote configurati (`git remote -v`):
-   - **Rilevamento Clone Template**: Se `origin` punta al repository pubblico del template (`danielelucarelli1980/personal-workspace`), l'agente **NON DEVE MAI** eseguire push di commit contenenti modifiche a `areas/`, `profile/`, `backlog/`, `journal/`, `inbox/`.
+   - **Rilevamento Clone Template**: Se `origin` punta al repository pubblico del template (`lucarelli-d-stesi/personal-workspace-template`), l'agente **NON DEVE MAI** eseguire push di commit contenenti modifiche a `areas/`, `profile/`, `backlog/`, `journal/`, `inbox/`.
    - **Intervento Proattivo**: L'agente blocca l'azione e spiega:
      > *"⚠️ Attenzione: il tuo workspace sta usando come 'origin' il template pubblico. I tuoi dati personali non devono essere inviati lì! Ti aiuto a creare un tuo repository GitHub privato (es. tuo-utente/mio-pos) e a reindirizzare 'origin'."*
 2. **Remote Template di Sola Lettura**:

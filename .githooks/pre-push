@@ -3,13 +3,13 @@
 # .githooks/pre-push — POS Privacy Safeguard
 #
 # Intercepts any push attempt to ensure personal data is never pushed
-# to the canonical upstream template repository (danielelucarelli1980/personal-workspace).
+# to the canonical upstream template repository (lucarelli-d-stesi/personal-workspace-template).
 # ==============================================================================
 set -euo pipefail
 
 REMOTE="$1"
 URL="$2"
-UPSTREAM_REPO="danielelucarelli1980/personal-workspace"
+UPSTREAM_REPO="personal-workspace-template"
 
 # If the target URL points to the public upstream template
 if [[ "$URL" == *"$UPSTREAM_REPO"* ]]; then
@@ -64,7 +64,7 @@ if [[ "$URL" == *"$UPSTREAM_REPO"* ]]; then
             echo "2. Reindirizza il remote 'origin' verso il tuo repository privato:"
             echo "   git remote set-url origin git@github.com:<tuo-utente>/<tuo-repo>.git"
             echo "3. Mantieni il template come upstream in sola lettura:"
-            echo "   git remote add template https://github.com/danielelucarelli1980/personal-workspace.git"
+            echo "   git remote add template https://github.com/lucarelli-d-stesi/personal-workspace-template.git"
             echo "   git remote set-url --push template NO_PUSH"
             echo "=================================================================="
             echo ""

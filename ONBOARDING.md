@@ -11,7 +11,7 @@ The **personal-workspace** is a universal, agnostic operational framework. It co
 ### 1. Clone the framework
 
 ```bash
-git clone https://github.com/danielelucarelli1980/personal-workspace.git ~/personal-workspace
+git clone https://github.com/lucarelli-d-stesi/personal-workspace-template.git ~/personal-workspace
 cd ~/personal-workspace
 ```
 

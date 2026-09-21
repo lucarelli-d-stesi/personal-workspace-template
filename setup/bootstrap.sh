@@ -222,7 +222,7 @@ ok "Hook pre-push (privacy safeguard): attivo (.githooks)"
 
 # 4b. Verify Git Remotes
 CURRENT_ORIGIN=$(git -C "$WORKSPACE_DIR" config --get remote.origin.url 2>/dev/null || echo "")
-TEMPLATE_ORIGIN="danielelucarelli1980/personal-workspace"
+TEMPLATE_ORIGIN="lucarelli-d-stesi/personal-workspace-template"
 
 if [[ "$CURRENT_ORIGIN" == *"$TEMPLATE_ORIGIN"* ]]; then
     warn "Il remote 'origin' punta attualmente al template pubblico ($CURRENT_ORIGIN)."
@@ -280,7 +280,7 @@ fi
 # 4c. Ensure template remote is registered with push disarmed
 CURRENT_TEMPLATE=$(git -C "$WORKSPACE_DIR" config --get remote.template.url 2>/dev/null || echo "")
 if [ -z "$CURRENT_TEMPLATE" ]; then
-    git -C "$WORKSPACE_DIR" remote add template "https://github.com/danielelucarelli1980/personal-workspace.git" 2>/dev/null || true
+    git -C "$WORKSPACE_DIR" remote add template "https://github.com/lucarelli-d-stesi/personal-workspace-template.git" 2>/dev/null || true
     git -C "$WORKSPACE_DIR" remote set-url --push template "NO_PUSH_UPSTREAM_TEMPLATE" 2>/dev/null || true
     ok "Remote 'template' aggiunto (upstream in sola lettura, push disarmato)"
 else

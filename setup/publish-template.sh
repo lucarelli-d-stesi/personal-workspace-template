@@ -3,7 +3,7 @@
 # publish-template.sh — Safe Framework Maintainer Publisher
 #
 # Allows the maintainer (Daniele) to publish updates to the public
-# template repository (danielelucarelli1980/personal-workspace) while
+# template repository (lucarelli-d-stesi/personal-workspace-template) while
 # strictly preventing any personal life data or credentials from leaking.
 #
 # Usage:
@@ -13,7 +13,7 @@ set -euo pipefail
 
 WORKSPACE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TEMPLATE_REMOTE="template"
-TEMPLATE_URL="git@github.com:danielelucarelli1980/personal-workspace.git"
+TEMPLATE_URL="git@github.com:lucarelli-d-stesi/personal-workspace-template.git"
 
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'

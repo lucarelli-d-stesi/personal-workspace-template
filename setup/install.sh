@@ -3,7 +3,7 @@
 # install.sh — One-line installer for Personal Operating System (POS)
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/danielelucarelli1980/personal-workspace/main/setup/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/lucarelli-d-stesi/personal-workspace-template/main/setup/install.sh | bash
 #
 # This script:
 #   1. Checks and installs base prerequisites (git, curl)
@@ -91,7 +91,7 @@ USER_HOME=$(getent passwd "$(id -un)" 2>/dev/null | cut -d: -f6 || echo "$HOME")
 [ -z "$USER_HOME" ] && USER_HOME="$HOME"
 
 DEFAULT_DIR="$USER_HOME/personal-workspace"
-FRAMEWORK_REPO="https://github.com/danielelucarelli1980/personal-workspace.git"
+FRAMEWORK_REPO="https://github.com/lucarelli-d-stesi/personal-workspace-template.git"
 
 TARGET_DIR="${POS_DIR:-$DEFAULT_DIR}"
 

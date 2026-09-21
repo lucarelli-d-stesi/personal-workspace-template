@@ -21,7 +21,7 @@ You are warmly encouraged to adopt, explore, and tailor this framework for your 
    - Click the green **"Use this template"** button at the top of the GitHub repository page to create a brand-new, unlinked repository in your own GitHub account.
    - Alternatively, clone this repository directly to your local machine:
      ```bash
-     git clone https://github.com/danielelucarelli1980/personal-workspace.git ~/personal-workspace
+     git clone https://github.com/lucarelli-d-stesi/personal-workspace-template.git ~/personal-workspace
      ```
 2. **Deploy your personal instance**:
    - Run the automated setup:

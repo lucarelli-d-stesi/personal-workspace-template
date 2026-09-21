@@ -228,12 +228,12 @@ if [ -d "$PERSONAL_DIR/.git" ]; then
         git -C "$PERSONAL_DIR" fetch template --quiet 2>/dev/null || warn "Impossibile contattare il remote 'template' (offline?)"
     else
         if [ "$SYNC_ALL" = true ]; then
-            git -C "$PERSONAL_DIR" remote add template "https://github.com/danielelucarelli1980/personal-workspace.git" 2>/dev/null || true
+            git -C "$PERSONAL_DIR" remote add template "https://github.com/lucarelli-d-stesi/personal-workspace-template.git" 2>/dev/null || true
             git -C "$PERSONAL_DIR" remote set-url --push template "NO_PUSH_UPSTREAM_TEMPLATE" 2>/dev/null || true
             ok "Configurato remote 'template' in $PERSONAL_DIR (push disarmato)"
         else
             warn "Remote 'template' non configurato nel workspace."
-            info "Puoi aggiungerlo con: git -C $PERSONAL_DIR remote add template https://github.com/danielelucarelli1980/personal-workspace.git"
+            info "Puoi aggiungerlo con: git -C $PERSONAL_DIR remote add template https://github.com/lucarelli-d-stesi/personal-workspace-template.git"
         fi
     fi
 fi

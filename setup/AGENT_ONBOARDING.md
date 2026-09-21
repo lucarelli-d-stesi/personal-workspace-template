@@ -5,7 +5,7 @@
 ---
 
 ## 1. Core Principles to Uphold
-1. **Privacy by Architecture**: Every user must have their own **Private GitHub Repository**. The upstream template (`danielelucarelli1980/personal-workspace`) is public and MUST NEVER receive user data, areas, notes, or credentials.
+1. **Privacy by Architecture**: Every user must have their own **Private GitHub Repository**. The upstream template (`lucarelli-d-stesi/personal-workspace-template`) is public and MUST NEVER receive user data, areas, notes, or credentials.
 2. **Organic Discovery**: DO NOT conduct initial interviews, questionnaires, or surveys. Let the user's areas and notes emerge organically from their actual tasks.
 3. **Deterministic Setup**: Follow this exact sequence below to complete setup safely.
 
@@ -18,13 +18,13 @@ If `command -v gh` succeeds and `gh auth status` is OK:
 ```bash
 # 1. Ask the user for their preferred repository name (default: <username>-pos or personal-workspace)
 # 2. Create the private repository directly from the template via GitHub API:
-gh repo create <repo-name> --template danielelucarelli1980/personal-workspace --private --clone <target-dir>
+gh repo create <repo-name> --template lucarelli-d-stesi/personal-workspace-template --private --clone <target-dir>
 
 # 3. Enter target directory:
 cd <target-dir>
 
 # 4. Add the canonical template as a read-only upstream remote with push disarmed:
-git remote add template https://github.com/danielelucarelli1980/personal-workspace.git
+git remote add template https://github.com/lucarelli-d-stesi/personal-workspace-template.git
 git remote set-url --push template "NO_PUSH_UPSTREAM_TEMPLATE"
 
 # 5. Run automated bootstrap:
@@ -34,7 +34,7 @@ bash setup/bootstrap.sh --yes
 ---
 
 ### Scenario B: Manual clone or `gh` not authenticated
-If you are already inside a clone of `danielelucarelli1980/personal-workspace`:
+If you are already inside a clone of `lucarelli-d-stesi/personal-workspace-template`:
 ```bash
 # 1. DISARM UPSTREAM PUSH IMMEDIATELY:
 git remote rename origin template 2>/dev/null || true
