@@ -87,7 +87,19 @@ moderates: [regulative-slug]         # Wuxing Ke (剋): homeostatic balance and 
 
 ---
 
-## 4. Quick Start & Onboarding
+## 4. Active Self-Maintaining Memory & Episodic Bedrock (Evo-Memory Suite)
+
+To prevent cognitive clutter, context rot, and token bloat as a personal knowledge base compounds over months and years, the framework incorporates an **active, self-maintaining memory engine** inspired by continuous memory research and Google DeepMind's *Evo-Memory* paper:
+
+- **Worklog Compaction**: Distills verbose session logs of completed backlog items into executive summaries, tangible deliverables, and reusable patterns (`python3 setup/evo_memory.py compact <item-id>`).
+- **Active Whittling with Episodic Bedrock Safeguards**: Algorithmic review of behavioral observations (`setup/evo_memory.py whittle`) based on *Recency × Frequency × Relevance*. Formative watershed events, turning points, and identitarian memories (`type: episodic_anchor`, `salience: bedrock`) possess latent heat and are strictly **immune from calendar-based decay**.
+- **Staleness & Reference Verifier**: Audits internal links, local Markdown targets, and code paths (`python3 setup/evo_memory.py staleness`).
+- **Holistic Memory Audit**: Generates an Evo-Memory health index integrated directly into the deployment status check (`python3 setup/evo_memory.py audit`).
+- **Methodological Playbook**: Read [`knowledge/playbooks/evo-memory.md`](knowledge/playbooks/evo-memory.md) for complete agent routines and consolidation protocols.
+
+---
+
+## 5. Quick Start & Onboarding
 
 ### Option A: Via GitHub Web (Recommended for Humans)
 1. Click the green **["Use this template"](https://github.com/new?template_name=personal-workspace-template&template_owner=lucarelli-d-stesi)** button above.
@@ -114,13 +126,13 @@ The AI will follow the deterministic protocol in [`setup/AGENT_ONBOARDING.md`](s
 
 ---
 
-## 5. Diagnostic Audit & Updates
+## 6. Diagnostic Audit & Updates
 
 ### Environment & Deployment Audit
 ```bash
 bash setup/status.sh
 ```
-Audits Git topology, hardware resources, encryption status, installed toolchains, vector index coverage (`zg`), and machine session continuity.
+Audits Git topology, hardware resources, encryption status, installed toolchains, vector index coverage (`zg`), machine session continuity, and Evo-Memory health.
 
 ### Zero-Knowledge Framework Updates
 ```bash
@@ -130,13 +142,13 @@ Checks for upstream framework improvements from the canonical template and appli
 
 ---
 
-## 6. Architectural Roadmap & Contributing
+## 7. Architectural Roadmap & Contributing
 
-- **Roadmap**: Consult the **[Architectural Roadmap](ROADMAP.md)** for ongoing tracks (Epistemic Graphs, Evo-Memory Consolidation).
+- **Roadmap**: Consult the **[Architectural Roadmap](ROADMAP.md)** for detailed tracks (Epistemic Graphs, Epistemic Resonance, Evo-Memory Suite).
 - **Contributing**: This repository is a personal cognitive template; external Pull Requests are not accepted. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
-## 7. License
+## 8. License
 
 Distributed under the [MIT License](LICENSE).
