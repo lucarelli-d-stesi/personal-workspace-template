@@ -71,9 +71,9 @@ While structured graphs handle formal causality, natural human recall is associa
   - **Dynamic Pivoting**: When the user pivots to another topic during a session, the agent instantly runs a semantic query to load the relevant context without full-workspace reloads.
 - **CLI Commands**:
   ```bash
-  zg query "how did we handle the odoo v18 migration?"  # Hybrid semantic search
-  zg status                                             # Index coverage and vector health
-  zg index                                              # Re-index workspace files
+  zg query "infrastructure upgrade decisions"  # Hybrid semantic search
+  zg status                                    # Index coverage and vector health
+  zg index                                     # Re-index workspace files
   ```
 
 ---
@@ -120,21 +120,17 @@ To prevent cognitive clutter, context rot, and token bloat as a personal knowled
 
 ## 6. Modular Tool Marketplace & Thin Overlays
 
-Rather than bloating the core framework with monolithic integrations, the POS provides an extensible **Marketplace of External Tools, Connectors, and MCP Servers** (`knowledge/sources/`, symlinked as `marketplace/`):
+Rather than bloating the core framework with monolithic integrations, the POS provides an extensible **Ecosystem Marketplace** (`knowledge/sources/`, symlinked as `marketplace/`):
 
-- **Curated Ecosystem Showcase**:
-  Pre-configured integration specifications and MCP configurations:
-  - **Document & Web Ingestion**: Docling (multimodal PDF/document conversion), Scrapling (undetected web scraping).
-  - **Daily Operations & School**: Google Workspace (Gmail, Calendar, Drive), Google Maps MCP, Spaggiari ClasseViva (electronic gradebook).
-  - **Social Automation**: Publora (multi-channel social publishing across Bluesky, LinkedIn, X, Threads, Mastodon, Telegram).
-  - **Developer & Knowledge Tools**: Cetmix Tower (Odoo.sh dev management), Memory Layer, Italia Corpus (Italian legislative open data).
-- **The Thin Overlay Architecture**:
-  Adopting a tool never contaminates Git with secrets. Instead, the marketplace wizard creates a lightweight Markdown pointer in `reference/sources/<tool-id>.md` specifying which areas have access, while credentials and API keys reside securely in local environment files (`~/.config/pos/<tool-id>.env`).
+- **Decoupled & Dynamic Architecture**:
+  The marketplace serves as an open-ended, modular catalog of external tools, data connectors, and Model Context Protocol (MCP) servers. Integrations evolve, expand, or deprecate dynamically without altering the kernel or polluting personal workflows.
+- **The Thin Overlay Pattern**:
+  Adopting a tool never contaminates Git with sensitive data or secrets. The marketplace wizard creates a lightweight Markdown pointer in `reference/sources/<tool-id>.md` mapping which areas have access, while credentials and API keys reside securely in local environment files (`~/.config/pos/<tool-id>.env`).
 - **Marketplace CLI Explorer**:
   ```bash
   bash setup/marketplace.sh              # Interactive terminal explorer
   python3 setup/marketplace.py list      # List available and adopted tools
-  python3 setup/marketplace.py show <id> # Inspect capabilities and setup instructions
+  python3 setup/marketplace.py show <id> # Inspect tool capabilities and setup guide
   python3 setup/marketplace.py adopt <id># 1-click adoption with automated thin overlay
   ```
 
