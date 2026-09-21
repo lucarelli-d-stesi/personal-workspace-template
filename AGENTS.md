@@ -88,14 +88,21 @@ L'agente LLM agisce come **guardiano preventivo della riservatezza (Cognitive Gu
    - Quando crei note o documenti di conoscenza, adotta relazioni tipizzate nel frontmatter YAML:
      ```yaml
      status: active | superseded | deprecated | proposed
+     # Relazioni Lineari / Causali (Logica Formale & Esecuzione)
      supersedes: [slug-nota-precedente]
      depends_on: [slug-dipendenza]
      conflicts_with: [slug-contraddizione]
      supports: [slug-argomento]
+     # Relazioni Correlative & di Processo (Epistemic Resonance & Pluralism)
+     resonates_with: [slug-risonanza]     # Gan-Ying: risonanza simpatica cross-dominio
+     polar_balance: [slug-polarita]       # Yin-Yang: polarità complementare dinamica
+     nourishes: [slug-nutrimento]         # Wuxing Sheng: generazione e linfa vitale
+     moderates: [slug-regolazione]        # Wuxing Ke: freno omeostatico e potatura
      ```
    - Se una nota ne sostituisce un'altra, aggiungi un disclaimer evidente in cima al vecchio documento:
      `> ⚠️ SUPERSEDED BY [Titolo Nuovo](file:///...) in data YYYY-MM-DD`
-   - Usa `python3 setup/graph.py check` o `python3 setup/graph.py lineage <slug>` per verificare l'integrità e la discendenza delle note.
+   - Usa `python3 setup/graph.py check`, `python3 setup/graph.py lineage <slug>`, `python3 setup/graph.py mermaid` o `python3 setup/graph.py stats`.
+   - Per approfondire la modellazione di tensioni feconde e risonanze consulta `knowledge/playbooks/epistemic-resonance.md`.
 4. **Fine Sessione (Harvesting)**:
    - Segui `knowledge/playbooks/harvesting.md`:
      - L'azione contingente con scadenza va nel backlog dell'area con tag trasversali.

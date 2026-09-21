@@ -59,21 +59,31 @@ Because personal notes are Markdown files stored in Git, the POS implements buil
 
 ---
 
-## 3. Epistemic Relationship Graph (Track 1)
+## 3. Epistemic Relationship Graph & Epistemic Resonance
 
-Knowledge notes, area specs, and backlog items support **typed epistemic relationships** in their YAML frontmatter:
+Knowledge notes, area specs, and backlog items support **typed epistemic relationships** in their YAML frontmatter, bridging Western linear logic with non-linear, correlative, and polar paradigms inspired by classical Eastern epistemology (Daoism, *Gan-Ying*, *Wuxing*):
 
 ```yaml
 status: active | superseded | deprecated | proposed
+
+# Mode A — Linear & Causal (Western Logic & Action)
 supersedes: [previous-note-slug]
 depends_on: [dependency-slug]
 conflicts_with: [contradiction-slug]
 supports: [foundation-slug]
+
+# Mode B — Correlative & Process (Plural Epistemology & Balance)
+resonates_with: [resonance-slug]     # Gan-Ying (感應): cross-domain sympathetic resonance
+polar_balance: [polarity-slug]       # Yin-Yang (陰陽): dynamic complementary polarity
+nourishes: [vital-flow-slug]         # Wuxing Sheng (生): continuous generative nourishment
+moderates: [regulative-slug]         # Wuxing Ke (剋): homeostatic balance and pruning
 ```
 
 - **Validation & Audit**: Run `python3 setup/graph.py check` to detect dangling references or broken links.
-- **Lineage Tracing**: Run `python3 setup/graph.py lineage <slug>` to view the evolution tree of a concept.
-- **Mermaid Graph**: Run `python3 setup/graph.py mermaid` to visualize knowledge dependencies.
+- **Lineage & Ecological Tracing**: Run `python3 setup/graph.py lineage <slug>` to view the full relational constellation of a concept (including nourishment, moderation, and polarities).
+- **Mermaid Graph**: Run `python3 setup/graph.py mermaid` to visualize knowledge dependencies with typed arrows (`-->`, `<==>`, `<-.->`, `==>`, `-.->`).
+- **Topology Statistics**: Run `python3 setup/graph.py stats` to inspect the balance between linear and correlative relations.
+- **Methodological Playbook**: Learn how to model dynamic tensions and resonances in [`knowledge/playbooks/epistemic-resonance.md`](knowledge/playbooks/epistemic-resonance.md).
 
 ---
 

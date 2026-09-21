@@ -106,6 +106,13 @@ Reserved tags: `pos:sync` (external mirror in STATUS.md), `pos:queue`
 mapping in context.md). Writers must read before writing, be idempotent, and
 never touch anything outside their markers.
 
+## Epistemic graph relationships
+
+Knowledge and context notes declare relationships via YAML frontmatter to prevent cultural echo chambers (Kernel Principle 7) and balance linear execution with ecological resilience:
+- **Linear & Causal**: `depends_on`, `supports`, `supersedes`, `conflicts_with`.
+- **Correlative & Process**: `resonates_with` (cross-domain resonance / *Gan-Ying*), `polar_balance` (complementary tension / *Yin-Yang*), `nourishes` (generative flow / *Wuxing Sheng*), `moderates` (homeostatic restraint / *Wuxing Ke*).
+Detailed semantics in `knowledge/playbooks/epistemic-resonance.md`; audit with `setup/graph.py`.
+
 ## Size budget
 
 Knowledge files aim to stay under **400 lines**. Larger files must open with
