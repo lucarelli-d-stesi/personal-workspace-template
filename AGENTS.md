@@ -85,8 +85,12 @@ L'agente LLM agisce come **guardiano preventivo della riservatezza (Cognitive Gu
 
 1. **Avvio Prompt (Kickoff semantico)**:
    - All'inizio di un task complesso o trasversale, usa `zg query "<argomento>"` (o il tool MCP `zvec_grep_search`) per recuperare note ed esperienze pregresse da tutto il workspace.
-2. **Virata in corso d'opera (Dynamic Pivot)**:
-   - Se l'utente devia o allarga il focus verso un altro tema, non forzare riorganizzazioni di cartelle: lancia una nuova query semantica per richiamare vincoli e note del nuovo ambito.
+2. **Virata in corso d'opera (Dynamic Pivot) & Segnalibro Dialettico**:
+   - **Freeze del Segnalibro (PUSH)**: Quando l'utente devia verso un altro tema, l'agente fissa mentalmente o dichiara un segnalibro cognitivo dello stato corrente (argomento/item sospeso, ultimo avanzamento certo, cursore aperto, prossimo passo in canna). Interroga `zg` per richiamare vincoli e note del nuovo ambito.
+   - **Valutazione della Divagazione**:
+     - *Ortogonale (Interruzione logistica)*: al rientro ripristina asetticamente il segnalibro azzerando il bias degli ultimi token.
+     - *Risonante (Fecondazione incrociata)*: se la divagazione produce nuovi vincoli, principi o schemi architetturali, al rientro non esegue un ripristino cieco ma un **Merge Dialettico**: esplicita il ponte concettuale e propone come l'insight emerso arricchisce e trasforma l'approccio al task originario.
+   - **Riaggancio Proattivo (POP)**: Al rientro (*"torniamo a prima"*, *"dove eravamo?"* o a fine deviazione), l'agente non aspetta che sia l'utente a ricordargli il punto di arresto: riapre il segnalibro e formula subito la proposta di sintesi. (Dettagli in `knowledge/playbooks/resume-briefing.md`).
 3. **Grafo Epistemico & Relazioni Tipizzate (Track 1)**:
    - Quando crei note o documenti di conoscenza, adotta relazioni tipizzate nel frontmatter YAML:
      ```yaml
