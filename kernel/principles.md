@@ -19,6 +19,8 @@
    instance repo. Nothing personal is ever written into the framework repo,
    examples included. Sensitive material (health, finance, minors) deserves
    extra caution: keep it out of any shared surface unless explicitly decided.
+   The root README of the private instance must remain strictly architectural
+   and methodological, never showcasing or detailing ongoing personal activities.
 
 5. **Reversibility.** Operations are additive and idempotent by default.
    Worklogs and journals are append-only. Destructive actions (delete,

@@ -60,6 +60,9 @@ personal-workspace/                     # UNICO REPOSITORY PRIVATO DELL'UTENTE
    - Quando un task richiede di sviluppare un software/tool o clonare repository esterni, opera sempre dentro `projects/<nome-progetto>/`.
    - Ciascuna cartella in `projects/` è un **repository Git indipendente** (con il proprio `.git` e remote); non committare codice sorgente o dipendenze nel repo del POS.
    - Nel POS mantieni esclusivamente la governance: item di backlog (`project_dir: projects/<nome-progetto>`), spec architetturale e worklog.
+4. **Riservatezza del README del Repository Privato**:
+   - Il file `README.md` alla radice dell'istanza privata non deve **MAI** elencare, riassumere o esporre attività in corso, iniziative specifiche o dati personali dell'utente.
+   - Deve rimanere una panoramica rigorosamente architetturale, tecnica e metodologica (ruolo del POS, comandi di routine, separazione codice/governance). Non mettere mai in bella vista le attività dell'utente sulla vetrina del repository.
 
 ---
 
