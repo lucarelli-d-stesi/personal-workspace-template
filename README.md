@@ -59,7 +59,26 @@ Because personal notes are Markdown files stored in Git, the POS implements buil
 
 ---
 
-## 3. Epistemic Relationship Graph & Epistemic Resonance
+## 3. Local Semantic Memory & Associative Search (`zg` / `zvgrep`)
+
+While structured graphs handle formal causality, natural human recall is associative. The POS integrates an ultra-fast, local-first vector search engine powered by **`zvgrep`** (`zvec-grep`), wrapped in the ergonomic **`zg`** CLI:
+
+- **Local-First & Zero Cloud Leakage**: All Markdown documents are indexed locally into a compact vector index (`index.zvec`). No personal notes, embeddings, or queries ever leave your machine.
+- **Hybrid FTS + Vector Search**: Merges exact keyword matching (BM25 full-text search) with dense semantic embeddings to surface past decisions, precedents, and context with sub-millisecond latency.
+- **Native AI Agent Integration (MCP)**:
+  - Exposes the `zvec_grep_search` tool via the Model Context Protocol (MCP) to Antigravity CLI, Claude Code, and Codex.
+  - **Semantic Kickoff**: Agents proactively retrieve relevant historical notes before beginning a complex task.
+  - **Dynamic Pivoting**: When the user pivots to another topic during a session, the agent instantly runs a semantic query to load the relevant context without full-workspace reloads.
+- **CLI Commands**:
+  ```bash
+  zg query "how did we handle the odoo v18 migration?"  # Hybrid semantic search
+  zg status                                             # Index coverage and vector health
+  zg index                                              # Re-index workspace files
+  ```
+
+---
+
+## 4. Epistemic Relationship Graph & Epistemic Resonance
 
 Knowledge notes, area specs, and backlog items support **typed epistemic relationships** in their YAML frontmatter, bridging Western linear logic with non-linear, correlative, and polar paradigms inspired by classical Eastern epistemology (Daoism, *Gan-Ying*, *Wuxing*):
 
@@ -87,7 +106,7 @@ moderates: [regulative-slug]         # Wuxing Ke (剋): homeostatic balance and 
 
 ---
 
-## 4. Active Self-Maintaining Memory & Episodic Bedrock (Evo-Memory Suite)
+## 5. Active Self-Maintaining Memory & Episodic Bedrock (Evo-Memory Suite)
 
 To prevent cognitive clutter, context rot, and token bloat as a personal knowledge base compounds over months and years, the framework incorporates an **active, self-maintaining memory engine** inspired by continuous memory research and Google DeepMind's *Evo-Memory* paper:
 
@@ -99,7 +118,29 @@ To prevent cognitive clutter, context rot, and token bloat as a personal knowled
 
 ---
 
-## 5. Quick Start & Onboarding
+## 6. Modular Tool Marketplace & Thin Overlays
+
+Rather than bloating the core framework with monolithic integrations, the POS provides an extensible **Marketplace of External Tools, Connectors, and MCP Servers** (`knowledge/sources/`, symlinked as `marketplace/`):
+
+- **Curated Ecosystem Showcase**:
+  Pre-configured integration specifications and MCP configurations:
+  - **Document & Web Ingestion**: Docling (multimodal PDF/document conversion), Scrapling (undetected web scraping).
+  - **Daily Operations & School**: Google Workspace (Gmail, Calendar, Drive), Google Maps MCP, Spaggiari ClasseViva (electronic gradebook).
+  - **Social Automation**: Publora (multi-channel social publishing across Bluesky, LinkedIn, X, Threads, Mastodon, Telegram).
+  - **Developer & Knowledge Tools**: Cetmix Tower (Odoo.sh dev management), Memory Layer, Italia Corpus (Italian legislative open data).
+- **The Thin Overlay Architecture**:
+  Adopting a tool never contaminates Git with secrets. Instead, the marketplace wizard creates a lightweight Markdown pointer in `reference/sources/<tool-id>.md` specifying which areas have access, while credentials and API keys reside securely in local environment files (`~/.config/pos/<tool-id>.env`).
+- **Marketplace CLI Explorer**:
+  ```bash
+  bash setup/marketplace.sh              # Interactive terminal explorer
+  python3 setup/marketplace.py list      # List available and adopted tools
+  python3 setup/marketplace.py show <id> # Inspect capabilities and setup instructions
+  python3 setup/marketplace.py adopt <id># 1-click adoption with automated thin overlay
+  ```
+
+---
+
+## 7. Quick Start & Onboarding
 
 ### Option A: Via GitHub Web (Recommended for Humans)
 1. Click the green **["Use this template"](https://github.com/new?template_name=personal-workspace-template&template_owner=lucarelli-d-stesi)** button above.
@@ -126,7 +167,7 @@ The AI will follow the deterministic protocol in [`setup/AGENT_ONBOARDING.md`](s
 
 ---
 
-## 6. Diagnostic Audit & Updates
+## 8. Diagnostic Audit & Updates
 
 ### Environment & Deployment Audit
 ```bash
@@ -142,13 +183,13 @@ Checks for upstream framework improvements from the canonical template and appli
 
 ---
 
-## 7. Architectural Roadmap & Contributing
+## 9. Architectural Roadmap & Contributing
 
-- **Roadmap**: Consult the **[Architectural Roadmap](ROADMAP.md)** for detailed tracks (Epistemic Graphs, Epistemic Resonance, Evo-Memory Suite).
+- **Roadmap**: Consult the **[Architectural Roadmap](ROADMAP.md)** for detailed tracks (Epistemic Graphs, Epistemic Resonance, Evo-Memory Suite, Ecosystem Marketplace).
 - **Contributing**: This repository is a personal cognitive template; external Pull Requests are not accepted. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
-## 8. License
+## 10. License
 
 Distributed under the [MIT License](LICENSE).
