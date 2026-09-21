@@ -100,7 +100,7 @@ if [ -d "$WORKSPACE_DIR/.git" ]; then
     fi
 
     # Check origin URL
-    if [[ "$ORIGIN_URL" == *"danielelucarelli1980/personal-workspace"* ]]; then
+    if [[ "$ORIGIN_URL" == *"personal-workspace"* ]]; then
         warn "Remote 'origin': $ORIGIN_URL (TEMPLATE PUBBLICO - NON PUBBLICARE DATI PERSONALI)"
     else
         ok "Remote 'origin' (Privato): $ORIGIN_URL"
@@ -166,6 +166,14 @@ ok "Fonti adottate (marketplace): $SOURCES_COUNT | Skill personali: $SKILLS_COUN
 if [ -f "$WORKSPACE_DIR/setup/graph.py" ]; then
     DANGLING=$(python3 "$WORKSPACE_DIR/setup/graph.py" check 2>/dev/null | grep -c "dangling" || true)
     ok "Grafo epistemico: integro (setup/graph.py)"
+fi
+
+# Evo-Memory health check (Track 4)
+if [ -f "$WORKSPACE_DIR/setup/evo_memory.py" ]; then
+    EVO_MSG=$(python3 "$WORKSPACE_DIR/setup/evo_memory.py" audit --short 2>/dev/null || echo "")
+    if [ -n "$EVO_MSG" ]; then
+        ok "$EVO_MSG"
+    fi
 fi
 
 # Check pending updates / migrations
