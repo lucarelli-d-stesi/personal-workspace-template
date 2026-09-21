@@ -2,7 +2,7 @@
 # ==============================================================================
 # publish-template.sh — Safe Framework Maintainer Publisher
 #
-# Allows the maintainer (Daniele) to publish updates to the public
+# Allows the framework maintainer to publish updates to the public
 # template repository (lucarelli-d-stesi/personal-workspace-template) while
 # strictly preventing any personal life data or credentials from leaking.
 #

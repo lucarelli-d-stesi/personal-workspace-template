@@ -358,7 +358,7 @@ fi
 if [ -d "$PERSONAL_DIR/.git" ]; then
     # Configure template remote for future updates if not present
     if ! git -C "$PERSONAL_DIR" remote get-url template &>/dev/null; then
-        git -C "$PERSONAL_DIR" remote add template "https://github.com/danielelucarelli1980/pos-instance-template.git" 2>/dev/null || true
+        git -C "$PERSONAL_DIR" remote add template "https://github.com/lucarelli-d-stesi/personal-workspace-template.git" 2>/dev/null || true
         ok "Configurato remote 'template' per aggiornamenti di sistema"
     fi
 

@@ -133,7 +133,7 @@ Alla prima invocazione da parte di qualsiasi assistente AI, il server apre una s
 
 ## 5. Attivazione nell'Istanza Personale (Thin Overlay)
 
-Ogni utente che desidera adottare Google Workspace nella propria istanza crea una scheda snella in `<instance_dir>/reference/sources/google-workspace-mcp.md`:
+Ogni utente che desidera adottare Google Workspace nella propria istanza crea una scheda snella in `reference/sources/google-workspace-mcp.md`:
 
 ```yaml
 ---
@@ -142,6 +142,6 @@ name: Google Workspace MCP
 source_ref: knowledge/sources/google-workspace-mcp.md
 profile: personal
 status: active
-areas: [carriera, finanze-familiari, supporto-familiare]
+areas: [lavoro, organizzazione]
 ---
 ```

@@ -20,7 +20,7 @@ echo "  -> Sincronizzazione struttura per $TARGET_DIR..."
 # 1. Configura remote 'template' se git repo
 if [ -d "$TARGET_DIR/.git" ]; then
     if ! git -C "$TARGET_DIR" remote get-url template &>/dev/null; then
-        git -C "$TARGET_DIR" remote add template "https://github.com/danielelucarelli1980/pos-instance-template.git" 2>/dev/null || true
+        git -C "$TARGET_DIR" remote add template "https://github.com/lucarelli-d-stesi/personal-workspace-template.git" 2>/dev/null || true
         echo "     + Remote 'template' configurato"
     fi
 fi

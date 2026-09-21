@@ -84,7 +84,7 @@ status: active
 type: method
 access: local-sparse
 tags: [memory, coding-agents, postgresql, pgvector, rust, mcp]
-areas: [carriera, terni-donne-odoo]
+areas: [sviluppo, progetti]
 ---
 
 # Memory Layer — Attivazione Personale (Thin Overlay)
@@ -93,6 +93,6 @@ Attivazione del motore di memoria tecnica per agenti di programmazione:
 👉 Consulta la scheda canonica e i comandi in `knowledge/sources/memory-layer.md`.
 
 ## Mappatura sui Progetti
-- Utilizzato nei repository software complessi in `projects/` (es. estensioni Odoo, blueprint Cetmix).
+- Utilizzato nei repository software in `projects/` (es. tool personalizzati, progetti indipendenti).
 - Credenziali PostgreSQL archiviate in `~/.config/pos/memory-layer.env` (permessi `600`).
 ```

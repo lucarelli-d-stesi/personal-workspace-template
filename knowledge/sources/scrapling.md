@@ -44,12 +44,12 @@ Scrapling adotta un'architettura modulare a tre livelli in base alla complessit�
 
 - **🏛️ Monitoraggio Civico, Delibere e Albi Pretori**:
   - Estrazione periodica di avvisi, determine dirigenziali e bandi da siti comunali o regionali che presentano protezioni perimetrali Cloudflare.
-- **📢 Attivismo & Rassegna Stampa**:
-  - Scraping di articoli di giornale, comunicati stampa o dossier d'attualità per il blog (*Uomini Oltre la Violenza*) o l'attivismo locale, superando paywall leggeri o blocchi anti-crawler.
-- **🚗 Veicoli, Mercato & Prezzi**:
-  - Monitoraggio di annunci per ricambi, quotazioni auto o tariffe assicurative da portali verticali con forte protezione anti-scraping.
+- **📰 Ricerca & Rassegna Stampa**:
+  - Scraping di articoli di giornale, comunicati o dossier d'attualità da portali informativi, superando blocchi anti-crawler.
+- **🔍 Monitoraggio Prezzi & Mercato**:
+  - Monitoraggio di annunci, cataloghi o tariffe da portali verticali con protezione anti-scraping.
 - **🎓 Ricerca e Materiali di Studio**:
-  - Acquisizione automatica di dispense o articoli accademici da portali che bloccano `curl` o `wget`.
+  - Acquisizione automatica di dispense o articoli da portali accademici che bloccano fetch tradizionali.
 
 ---
 
@@ -83,13 +83,13 @@ for t in titoli:
 ## 4. Adozione nell'Istanza Personale (Thin Overlay)
 
 Se desideri aggiungere Scrapling al tuo catalogo di strumenti personali:
-1. Crea la scheda in `personal/<istanza>/reference/sources/scrapling.md`:
+1. Crea la scheda in `reference/sources/scrapling.md`:
    ```yaml
    ---
    name: Scrapling Web Scraper
    source_ref: knowledge/sources/scrapling.md
    status: active
-   areas: [attivismo, veicoli, carriera]
+   areas: [ricerca, lavoro]
    ---
    ```
 2. L'assistente AI utilizzerà Scrapling ogni volta che riscontrerà blocchi HTTP `403` o pagine con protezione Cloudflare durante task di ricerca e raccolta dati.

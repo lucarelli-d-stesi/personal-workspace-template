@@ -15,11 +15,6 @@ import time
 USER_HOME = os.path.expanduser("~")
 ENV_FILE = os.path.join(USER_HOME, ".config", "pos", "google.env")
 
-# Fallback to /home/daniele if in container/special home
-if not os.path.exists(ENV_FILE) and os.path.exists("/home/daniele/.config/pos/google.env"):
-    ENV_FILE = "/home/daniele/.config/pos/google.env"
-    USER_HOME = "/home/daniele"
-
 if not os.path.exists(ENV_FILE):
     print(f"Errore: file {ENV_FILE} non trovato. Esegui prima setup/setup-google-workspace-mcp.sh", file=sys.stderr)
     sys.exit(1)
@@ -111,7 +106,10 @@ async def main():
         print(f"[✓] Token salvato in: {creds_file}")
 
         # Mirror credentials across home directories if split (e.g. CLI vs Antigravity sandbox)
-        alt_homes = {os.path.expanduser("~"), os.environ.get("HOME", ""), "/home/daniele", "/home/daniele/.antigravity-personal"}
+        alt_homes = {os.path.expanduser("~"), os.environ.get("HOME", "")}
+        for h in list(alt_homes):
+            if h and os.path.exists(os.path.join(h, ".antigravity-personal")):
+                alt_homes.add(os.path.join(h, ".antigravity-personal"))
         for h in alt_homes:
             if h and os.path.exists(h):
                 alt_dir = os.path.join(h, ".google_workspace_mcp", "credentials")

@@ -34,10 +34,7 @@ DEFAULT_HEADERS = {
 
 def get_env_file_path() -> str:
     user_home = os.path.expanduser("~")
-    path = os.path.join(user_home, ".config", "pos", "classeviva.env")
-    if not os.path.exists(path) and os.path.exists("/home/daniele/.config/pos/classeviva.env"):
-        return "/home/daniele/.config/pos/classeviva.env"
-    return path
+    return os.path.join(user_home, ".config", "pos", "classeviva.env")
 
 
 def load_config() -> Dict[str, str]:

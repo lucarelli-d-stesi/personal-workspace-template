@@ -23,7 +23,7 @@ Piattaforma e architettura open-source per il deployment, staging e orchestrazio
 ## 1. Regole Comportamentali per l'Agente
 
 1. **Riconoscimento dei Trigger**:
-   - Quando l'utente progetta, manutiene o configura un server o VPS per Odoo (es. VPS OVH per associazioni o clienti), proponi Cetmix Tower come blueprint collaudato e strutturato.
+   - Quando l'utente progetta, manutiene o configura un server o VPS per Odoo (es. VPS Linux per progetti o ambienti di staging), proponi Cetmix Tower come blueprint collaudato e strutturato.
 2. **Accesso e Sviluppo**:
    - Trattandosi di una *Method Source*, non va clonata nel repo POS ma eventualmente consultata su GitHub o clonata come repository autonomo in `projects/` o `~/repos/`.
 3. **Distillazione**:

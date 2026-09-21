@@ -86,13 +86,13 @@ with open("circolare_analizzata.md", "w") as f:
 ## 4. Adozione nell'Istanza Personale (Thin Overlay)
 
 Se desideri adottare formalmente Docling nella tua istanza personale:
-1. Crea la scheda `personal/<istanza>/reference/sources/docling.md`:
+1. Crea la scheda in `reference/sources/docling.md`:
    ```yaml
    ---
    name: Docling Document Parser
    source_ref: knowledge/sources/docling.md
    status: active
-   areas: [studio, carriera, finanze-familiari, supporto-familiare]
+   areas: [ricerca, lavoro, documenti]
    ---
    ```
 2. Installa la dipendenza locale nell'ambiente Python:

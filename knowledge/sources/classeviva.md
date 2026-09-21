@@ -97,9 +97,9 @@ nano ~/.config/pos/classeviva.env
 ```
 
 ### Passo 2: Utilizzo della CLI di Interrogazione
-Il framework fornisce lo script [setup/classeviva-cli.py](file:///home/daniele/personal-workspace/setup/classeviva-cli.py):
+Il framework fornisce lo script [setup/classeviva-cli.py](setup/classeviva-cli.py):
 ```bash
-# Verifica connessione e lista figlie/studenti collegati
+# Verifica connessione e lista studenti collegati
 python3 setup/classeviva-cli.py status
 
 # Mostra i compiti dei prossimi 7 giorni
@@ -117,5 +117,5 @@ python3 setup/classeviva-cli.py lezioni
 ## 5. Attivazione nell'Istanza Personale (Thin Overlay)
 
 Per attivare la fonte nell'istanza privata dell'utente:
-- Genitore: `<instance_dir>/reference/sources/classeviva.md` collegata all'area `supporto-familiare`.
-- Figlia/Studente: `<instance_dir>/reference/sources/classeviva.md` collegata all'area `studio` o `scuola`.
+- Profilo Genitore: crea `reference/sources/classeviva.md` collegata alla propria area di supporto familiare.
+- Profilo Studente: crea `reference/sources/classeviva.md` collegata all'area `studio` o `scuola`.

@@ -95,9 +95,9 @@ Questo catalogo raccoglie e indicizza le **fonti esterne**, i **connettori CLI**
 ## 3. Filosofia del Marketplace: "Opt-In & Zero-Knowledge"
 
 1. **Agnostico e Non Vincolante**:
-   Nessuno strumento del marketplace è pre-installato o obbligatorio. Ogni utente del workspace (ad es. Daniele, Claudia, Gemma, Petra) sceglie autonomamente cosa attivare in base alle proprie esigenze.
+   Nessuno strumento del marketplace è pre-installato o obbligatorio. Ciascun utente sceglie autonomamente quali connettori attivare in base alle proprie esigenze personali o professionali.
 2. **Attivazione tramite Thin Overlay**:
-   Per "adottare" uno strumento nella propria vita, l'utente o l'assistente AI crea un file leggero in `personal/<istanza>/reference/sources/<id>.md`:
+   Per "adottare" uno strumento, l'utente o l'assistente AI crea un file leggero in `reference/sources/<id>.md`:
    ```yaml
    ---
    name: Spaggiari ClasseViva
