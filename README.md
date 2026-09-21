@@ -1,13 +1,13 @@
 # Personal Workspace — Personal Operating System (POS)
 
-[![Use this template](https://img.shields.io/badge/GitHub-Use_this_template-2ea44f?style=for-the-badge&logo=github)](https://github.com/new?template_name=personal-workspace&template_owner=danielelucarelli1980)
+[![Use this template](https://img.shields.io/badge/GitHub-Use_this_template-2ea44f?style=for-the-badge&logo=github)](https://github.com/new?template_name=personal-workspace&template_owner=lucarelli-d-stesi)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <!-- 🤖 AI ASSISTANT ONBOARDING DIRECTIVE (Antigravity CLI, Claude Code, Gemini CLI, Cursor, Codex): -->
 <!-- If the user asks you to adopt, setup or install this workspace, DO NOT IMPROVISE. -->
 <!-- Follow the deterministic protocol in: setup/AGENT_ONBOARDING.md -->
 
-A file-based, open-source **Personal Operating System (POS)**: a cognitive architecture and operational framework designed for LLM assistants (Claude Code, Antigravity CLI, Codex, etc.) to collaborate alongside you across your entire life — software projects, daily activities, family responsibilities, personal finance, vehicles, and continuous learning — with long-term memory, consistent methodology, and privacy by design.
+A file-based, open-source **Personal Operating System (POS)**: a cognitive architecture and operational framework designed for LLM assistants (Claude Code, Antigravity CLI, Codex, etc.) to collaborate alongside you across your entire life — software projects, daily activities, family responsibilities, personal finance, and continuous learning — with long-term memory, consistent methodology, and privacy by design.
 
 ---
 
@@ -53,7 +53,7 @@ Because personal notes are Markdown files stored in Git, the POS implements buil
 1. **Cognitive Guard (LLM Instruction Safeguard)**:
    Universal agent instructions in `AGENTS.md` mandate that before proposing or executing `git push`, the AI assistant inspects `git remote -v`. If `origin` points to the public upstream template and personal files are detected, the LLM **aborts the push immediately** and guides the user to set up their private repository.
 2. **Local Pre-Push Git Hook (`.githooks/pre-push`)**:
-   Git hooks activated via `git config core.hooksPath .githooks` physically block any push to `danielelucarelli1980/personal-workspace` if changes touch personal directories (`areas/`, `profile/`, `backlog/`, etc.).
+   Git hooks activated via `git config core.hooksPath .githooks` physically block any push to `lucarelli-d-stesi/personal-workspace` if changes touch personal directories (`areas/`, `profile/`, `backlog/`, etc.).
 3. **Automated CI PR Blocker (`.github/workflows/close-pull-requests.yml`)**:
    Any Pull Request opened against this public repository is inspected, flagged for privacy protection, and automatically closed.
 
@@ -90,7 +90,7 @@ moderates: [regulative-slug]         # Wuxing Ke (剋): homeostatic balance and 
 ## 4. Quick Start & Onboarding
 
 ### Option A: Via GitHub Web (Recommended for Humans)
-1. Click the green **["Use this template"](https://github.com/new?template_name=personal-workspace&template_owner=danielelucarelli1980)** button above.
+1. Click the green **["Use this template"](https://github.com/new?template_name=personal-workspace&template_owner=lucarelli-d-stesi)** button above.
 2. Choose **Private** and create your repository (e.g., `username/my-pos`).
 3. Clone your private repository locally and run the bootstrap wizard:
    ```bash
@@ -101,14 +101,14 @@ moderates: [regulative-slug]         # Wuxing Ke (剋): homeostatic balance and 
 
 ### Option B: Via GitHub CLI (`gh`)
 ```bash
-gh repo create my-pos --template danielelucarelli1980/personal-workspace --private --clone ~/personal-workspace
+gh repo create my-pos --template lucarelli-d-stesi/personal-workspace --private --clone ~/personal-workspace
 cd ~/personal-workspace
 bash setup/bootstrap.sh
 ```
 
 ### Option C: Via AI Assistant Prompt (Agentic Onboarding)
 Tell your AI assistant (Claude Code, Antigravity CLI, Cursor):
-> *"Adotta la soluzione di memoria prevista da github.com/danielelucarelli1980/personal-workspace"*
+> *"Adopt the memory solution provided by github.com/lucarelli-d-stesi/personal-workspace"*
 
 The AI will follow the deterministic protocol in [`setup/AGENT_ONBOARDING.md`](setup/AGENT_ONBOARDING.md) to initialize your private repository safely.
 
